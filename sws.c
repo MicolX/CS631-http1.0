@@ -1,3 +1,4 @@
+#include "connect.h>
 #include "sws.h"
 
 int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, port = 8080, logFd;
@@ -7,26 +8,23 @@ char *dir, *addr, *file;
 int
 main(int argc, char **argv)
 {
-        int hasopt = 0;
         char opt;
 
         while (optind < argc) {
                 if ((opt = getopt(argc, argv, "c:dhi:l:p:")) != -1) {
                         switch (opt) {
                                 case 'c':
-                                        if (optarg == NULL) {
-                                                fprintf(stderr, "-%c: missing argument\n", opt);
-                                                exit(EXIT_FAILURE);
-                                        }
+//                                        if (optarg == NULL) {
+//                                                fprintf(stderr, "-%c: missing argument\n", opt);
+//                                                exit(EXIT_FAILURE);
+//                                        }
                                         dir = optarg;
                                         c_opt = 1;
-                                        hasopt = 1;
                                         break;
 
                                 case 'd':
                                         logFd = 0;
                                         d_opt = 1;
-                                        hasopt = 1;
                                         break;
 
                                 case 'h':
@@ -37,24 +35,22 @@ main(int argc, char **argv)
                                 case 'i':
                                         addr = optarg;  //TODO: validate if proper IPv4/IPv6 using inet_pton(3)
                                         i_opt = 1;
-                                        hasopt = 1;
                                         break;
 
                                 case 'l':
-                                        if (optarg == NULL) {
-                                                fprintf(stderr, "-%c: missing argument\n", opt);
-                                                exit(EXIT_FAILURE);
-                                        }
+//                                        if (optarg == NULL) {
+//                                                fprintf(stderr, "-%c: missing argument\n", opt);
+//                                                exit(EXIT_FAILURE);
+//                                        }
                                         file = optarg;
                                         l_opt = 1;
-                                        hasopt = 1;
                                         break;
 
                                 case 'p':
-                                        if (optarg == NULL) {
-                                                fprintf(stderr, "-%c: missing argument\n", opt);
-                                                exit(EXIT_FAILURE);
-                                        }
+//                                        if (optarg == NULL) {
+//                                                fprintf(stderr, "-%c: missing argument\n", opt);
+//                                                exit(EXIT_FAILURE);
+//                                        }
 					char *temp = NULL;
                                         port = (int)strtol(optarg, &temp, 10);
                                         errno = 0;
@@ -63,7 +59,6 @@ main(int argc, char **argv)
                                                 exit(EXIT_FAILURE);
                                         }
                                         p_opt = 1;
-                                        hasopt = 1;
                                         break;
 
                                 default:
@@ -73,9 +68,9 @@ main(int argc, char **argv)
                 }
         }
 
-	if (hasopt) {
-		;
-	}
+        if (d_opt == 1) {
+                debugSocket();
+        }
 
         /* Daemon Process */
         if (d_opt == 0) {
