@@ -18,6 +18,13 @@
 
 #define DEBUG_BACKLOG 5      //TODO: how to determine backlog size?
 
+int
+openSocket();
 
+void
+handleSocket(int s);
+
+int
+debugSocket();
 
 #endif
