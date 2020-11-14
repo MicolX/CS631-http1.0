@@ -7,7 +7,7 @@ char *dir, *addr, *file;
 int
 main(int argc, char **argv)
 {
-        int hasopt = 0, previous, optchar;
+        int hasopt = 0;
         char opt;
 
         while (optind < argc) {
@@ -24,7 +24,7 @@ main(int argc, char **argv)
                                         break;
 
                                 case 'd':
-                                        log = 0;
+                                        logFd = 0;
                                         d_opt = 1;
                                         hasopt = 1;
                                         break;
@@ -55,10 +55,11 @@ main(int argc, char **argv)
                                                 fprintf(stderr, "-%c: missing argument\n", opt);
                                                 exit(EXIT_FAILURE);
                                         }
-                                        char *temp;
-                                        port = (int)strtol(optarg);
-                                        if (temp != '\0') {
-                                                fprintf(stderr, "%s: invalid port '%c'\n", argv[0], optarg);
+					char *temp = NULL;
+                                        port = (int)strtol(optarg, &temp, 10);
+                                        errno = 0;
+					if ((temp == optarg) || (errno != 0)) {
+                                                fprintf(stderr, "%s: invalid port '%s'\n", argv[0], optarg);
                                                 exit(EXIT_FAILURE);
                                         }
                                         p_opt = 1;
@@ -66,19 +67,20 @@ main(int argc, char **argv)
                                         break;
 
                                 default:
-                                        fprintf(stderr, "invalid option '%c'\n", argv[0], opt);
+                                        fprintf(stderr, "%s: invalid option '%c'\n", argv[0], opt);
                                         exit(EXIT_FAILURE);
                         }
                 }
         }
 
+	if (hasopt) {
+		;
+	}
+
         /* Daemon Process */
-        if (d_log == 0) {
+        if (d_opt == 0) {
                 // Step 1: clear environment
-                if (clearenv(void) != 0) {
-                        fprintf(stderr, "error clearing environment\n", argv[0], opt);
-                        exit(EXIT_FAILURE);
-                }
+		environ = NULL;
 
                 // Step 2: fork off parent process
                 pid_t pid;
@@ -96,7 +98,7 @@ main(int argc, char **argv)
                 //TODO: signal handlers (see HW #2)
 
                 // Step 3: change file mode mask (umask)
-                umask(0)
+                umask(0);
 
                 // Step 4: create unique Session ID (SID)
                 if (setsid() < 0) {     // child inherits group leadership
