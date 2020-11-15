@@ -1,4 +1,4 @@
-#include "connect.h>
+#include "connect.h"
 #include "sws.h"
 
 int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, port = 8080, logFd;
@@ -9,6 +9,7 @@ int
 main(int argc, char **argv)
 {
         char opt;
+	char *temp = NULL;
 
         while (optind < argc) {
                 if ((opt = getopt(argc, argv, "c:dhi:l:p:")) != -1) {
@@ -51,7 +52,6 @@ main(int argc, char **argv)
 //                                                fprintf(stderr, "-%c: missing argument\n", opt);
 //                                                exit(EXIT_FAILURE);
 //                                        }
-					char *temp = NULL;
                                         port = (int)strtol(optarg, &temp, 10);
                                         errno = 0;
 					if ((temp == optarg) || (errno != 0)) {
