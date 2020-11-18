@@ -1,4 +1,4 @@
-
+#include "sws.h"
 
 int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, port = 8080, logFd = 1, ipv;      //TODO: change logfd from stdout
 char *dir, *addr, *file, *ipAddr;
@@ -8,7 +8,6 @@ int
 main(int argc, char **argv)
 {
         char opt;
-	char *temp = NULL;
 
         while (optind < argc) {
                 if ((opt = getopt(argc, argv, "c:dhi:l:p:")) != -1) {
@@ -55,7 +54,7 @@ main(int argc, char **argv)
                                 case 'p':
                                         port = (int)strtol(optarg, &temp, 10);
                                         errno = 0;
-					if ((temp == optarg) || (errno != 0)) {
+					if (errno != 0) {
                                                 fprintf(stderr, "%s: invalid port '%s'\n", argv[0], optarg);
                                                 exit(EXIT_FAILURE);
                                         }

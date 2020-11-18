@@ -1,3 +1,5 @@
+#include "connect.h"
+
 int
 verifyIp(const char *str, char &ipAddr)
 {
@@ -81,7 +83,6 @@ handle4Socket(int s)
         int socketFd, reader, af, size;
         socklen_t socklen;
         const char *rip;
-        char *addr;
 
         char addr[INET_ADDRSTRLEN];
         struct sockaddr_in client;
@@ -119,7 +120,6 @@ handle6Socket(int s)
         int socketFd, reader, af, size;
         socklen_t socklen;
         const char *rip;
-        char *addr;
 
         char addr[INET6_ADDRSTRLEN];
         struct sockaddr_in6 client;
