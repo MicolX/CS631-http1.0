@@ -7,7 +7,8 @@ char *dir, *addr, *file, *ipAddr;
 int
 main(int argc, char **argv)
 {
-        char opt;
+        char *temp = NULL;
+	char opt;
 
         while (optind < argc) {
                 if ((opt = getopt(argc, argv, "c:dhi:l:p:")) != -1) {
@@ -28,7 +29,7 @@ main(int argc, char **argv)
                                         exit(EXIT_SUCCESS);
 
                                 case 'i':
-                                        ipv = verifyIp(optarg, char &ipAddr);
+                                        ipv = verifyIp(optarg);
                                         if (ipv == -1) {
                                                 fprintf(stderr, "%s: invalid IP Address '%s'\n", argv[0], optarg);
                                                 exit(EXIT_FAILURE);
@@ -38,18 +39,16 @@ main(int argc, char **argv)
 
                                 case 'l':
                                         file = optarg;
-                                        if((logFd = open(file, O_WRONLY | O_CREAT | O_APPEND, S_IRWXU)) <==> -1) {
-                                                if ((logFd = openat(logFd, basename(path), O_WRONLY  | O_CREAT | O_APPEND, S_IRWXU)) < 0) {
+                                        if((logFd = open(file, O_WRONLY | O_CREAT | O_APPEND, S_IRWXU)) == -1) {
+                                                if ((logFd = openat(logFd, basename(file), O_WRONLY  | O_CREAT | O_APPEND, S_IRWXU)) < 0) {
                                                         fprintf(stderr, "%s: invalid logging file '%s': %s\n", argv[0], optarg, strerror(errno));
                                                         exit(EXIT_FAILURE);
                                                 }
                                                 fprintf(stderr, "%s: invalid logging file '%s': %s\n", argv[0], optarg, strerror(errno));
                                                 exit(EXIT_FAILURE);
-                                        } else {
-                                                if ((logFd = openat(file, basename())))
                                         }
-                                        l_opt = 1;
-                                        break;
+					l_opt = 1;
+					break;
 
                                 case 'p':
                                         port = (int)strtol(optarg, &temp, 10);

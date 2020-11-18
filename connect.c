@@ -1,21 +1,15 @@
 #include "connect.h"
 
 int
-verifyIp(const char *str, char
-
-&ipAddr)
+verifyIp(const char *str)
 {
-if (
-inet_pton(AF_INET, str, ipAddr
-) == 1){
-return 4;
-} else if (
-inet_pton(AF_INET6, str, ipAddr
-) == 1) {
-return 6;
-} else {
-return -1;
-}
+	if ((inet_pton(AF_INET, str, &ipAddr)) == 1) {
+		return 4;
+	} else if ((inet_pton(AF_INET6, str, &ipAddr)) == 1) {
+		return 6;
+	} else {
+		return -1;
+	}
 }
 
 int
@@ -36,7 +30,11 @@ open4Socket() {
                 }
                 sockaddr.sin_addr = addr;
         } else {
-                sockaddr.sin_addr = INADDR_ANY;
+		if (inet_aton("::fff:0.0.0.0", &addr)) {
+			perror("setting catch-all IPv4 socket address");
+			exit(EXIT_FAILURE);
+		}
+		sockaddr.sin_addr = addr;
         }
 
         if ((sock = socket(type, SOCK_STREAM, 0)) < 0) {
@@ -71,19 +69,21 @@ open6Socket() {
         socklen_t socklen;
 
         struct sockaddr_in6 sockaddr;
-        struct in_addr6 addr;
-        type = PF_INET6;
+        struct in6_addr addr;
+	
+	type = PF_INET6;
         sockaddr.sin6_family = AF_INET6;
         sockaddr.sin6_port = port;
 
         if (i_opt == 1) {
-                if (inet_aton(ipAddr &addr) == 0) {
+		
+                if (inet_pton(AF_INET6, ipAddr, &addr) == 0) {
                         perror("setting IPv6 socket address");
                         exit(EXIT_FAILURE);
                 }
-                sockaddr.sin6_addr = addr;
+		sockaddr.sin6_addr = addr;
         } else {
-                sockaddr.sin6_addr = IN6ADDR_ANY;
+                sockaddr.sin6_addr = in6addr_any;
         }
 
 
@@ -114,7 +114,7 @@ open6Socket() {
 
 void
 handle4Socket(int s) {
-        int socketFd, reader, af, size;
+        int socketFd, reader;
         socklen_t socklen;
         const char *rip;
 
@@ -150,7 +150,7 @@ handle4Socket(int s) {
 
 void
 handle6Socket(int s) {
-        int socketFd, reader, af, size;
+        int socketFd, reader;
         socklen_t socklen;
         const char *rip;
 
