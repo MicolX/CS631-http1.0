@@ -1,55 +1,42 @@
 #include "connect.h"
 
 int
-verifyIp(const char *str, char &ipAddr)
+verifyIp(const char *str, char
+
+&ipAddr)
 {
-    if (inet_pton(AF_INET, str, ipAddr) == 1){
-            return 4;
-    } else if (inet_pton(AF_INET6, str, ipAddr) == 1) {
-            return 6;
-    } else {
-            return -1;
-    }
+if (
+inet_pton(AF_INET, str, ipAddr
+) == 1){
+return 4;
+} else if (
+inet_pton(AF_INET6, str, ipAddr
+) == 1) {
+return 6;
+} else {
+return -1;
+}
 }
 
 int
-openSocket()
-{
+open4Socket() {
         int sock, type;
         socklen_t socklen;
 
-        if (ipv == 4) {
-                struct sockaddr_in sockaddr;
-                struct in_addr addr;
-                type = PF_INET;
-                sockaddr.sin_family = AF_INET;
-                sockaddr.sin_port = port;
+        struct sockaddr_in sockaddr;
+        struct in_addr addr;
+        type = PF_INET;
+        sockaddr.sin_family = AF_INET;
+        sockaddr.sin_port = port;
 
-                if (i_opt == 1) {
-                        if (inet_aton(ipAddr, &addr) == 0) {
-                                perror("setting IPv4 socket address");
-                                exit(EXIT_FAILURE);
-                        }
-                        sockaddr.sin_addr = addr;
-                } else {
-                        sockaddr.sin_addr = INADDR_ANY;
+        if (i_opt == 1) {
+                if (inet_aton(ipAddr, &addr) == 0) {
+                        perror("setting IPv4 socket address");
+                        exit(EXIT_FAILURE);
                 }
+                sockaddr.sin_addr = addr;
         } else {
-                struct sockaddr_in6 sockaddr;
-                struct in_addr6 addr;
-                type = PF_INET6;
-                sockaddr.sin6_family = AF_INET6;
-                sockaddr.sin6_port = port;
-
-                if (i_opt == 1) {
-                        if (inet_aton(ipAddr &addr) == 0) {
-                                perror("setting IPv6 socket address");
-                                exit(EXIT_FAILURE);
-                        }
-                        sockaddr.sin6_addr = addr;
-                } else {
-                        sockaddr.sin6_addr = IN6ADDR_ANY;
-                }
+                sockaddr.sin_addr = INADDR_ANY;
         }
 
         if ((sock = socket(type, SOCK_STREAM, 0)) < 0) {
@@ -57,13 +44,61 @@ openSocket()
                 exit(EXIT_FAILURE);
         }
 
-        if (bind(sock, (struct sockaddr *)&sockaddr, sizeof(sockaddr)) != 0) {
+        if (bind(sock, (struct sockaddr *) &sockaddr, sizeof(sockaddr)) != 0) {
                 perror("error binding the socket stream");
                 exit(EXIT_FAILURE);
         }
 
         socklen = sizeof(sockaddr);
-        if (getsockname(sock, (struct sockaddr *)&sockaddr, &socklen) != 0) {
+        if (getsockname(sock, (struct sockaddr *) &sockaddr, &socklen) != 0) {
+                perror("error getting socket name");
+                exit(EXIT_FAILURE);
+        }
+
+        printf("socket has port #%d\n", ntohs(port));
+
+        if (listen(sock, DEBUG_BACKLOG) < 0) {
+                perror("listening");
+                exit(EXIT_FAILURE);
+        }
+        return sock;
+}
+
+
+int
+open6Socket() {
+        int sock, type;
+        socklen_t socklen;
+
+        struct sockaddr_in6 sockaddr;
+        struct in_addr6 addr;
+        type = PF_INET6;
+        sockaddr.sin6_family = AF_INET6;
+        sockaddr.sin6_port = port;
+
+        if (i_opt == 1) {
+                if (inet_aton(ipAddr &addr) == 0) {
+                        perror("setting IPv6 socket address");
+                        exit(EXIT_FAILURE);
+                }
+                sockaddr.sin6_addr = addr;
+        } else {
+                sockaddr.sin6_addr = IN6ADDR_ANY;
+        }
+
+
+        if ((sock = socket(type, SOCK_STREAM, 0)) < 0) {
+                perror("error getting socket stream");
+                exit(EXIT_FAILURE);
+        }
+
+        if (bind(sock, (struct sockaddr *) &sockaddr, sizeof(sockaddr)) != 0) {
+                perror("error binding the socket stream");
+                exit(EXIT_FAILURE);
+        }
+
+        socklen = sizeof(sockaddr);
+        if (getsockname(sock, (struct sockaddr *) &sockaddr, &socklen) != 0) {
                 perror("error getting socket name");
                 exit(EXIT_FAILURE);
         }
@@ -78,8 +113,7 @@ openSocket()
 }
 
 void
-handle4Socket(int s)
-{
+handle4Socket(int s) {
         int socketFd, reader, af, size;
         socklen_t socklen;
         const char *rip;
@@ -88,7 +122,7 @@ handle4Socket(int s)
         struct sockaddr_in client;
 
         socklen = sizeof(client);
-        if ((socketFd = accept(s, (struct sockaddr *)&client, &socklen)) < 0) {
+        if ((socketFd = accept(s, (struct sockaddr *) &client, &socklen)) < 0) {
                 perror("accept");
                 return;
         }
@@ -115,8 +149,7 @@ handle4Socket(int s)
 }
 
 void
-handle6Socket(int s)
-{
+handle6Socket(int s) {
         int socketFd, reader, af, size;
         socklen_t socklen;
         const char *rip;
@@ -125,7 +158,7 @@ handle6Socket(int s)
         struct sockaddr_in6 client;
 
         socklen = sizeof(client);
-        if ((socketFd = accept(s, (struct sockaddr *)&client, &socklen)) < 0) {
+        if ((socketFd = accept(s, (struct sockaddr *) &client, &socklen)) < 0) {
                 perror("accept");
                 return;
         }
@@ -138,7 +171,7 @@ handle6Socket(int s)
         }
 
         do {
-        	char buf[BUFSIZ];
+                char buf[BUFSIZ];
                 bzero(buf, sizeof(buf));
                 if ((reader = read(socketFd, buf, BUFSIZ)) < 0) {
                         perror("error reading stream message");
@@ -146,19 +179,21 @@ handle6Socket(int s)
                         printf("ending connection from %s\n", rip);
                 } else {
                         printf("Client %s sent: %s", rip, buf);
-		}
+                }
         } while (reader != 0);
         close(socketFd);
 }
 
 
-
 int
-debugSocket()
-{
+debugSocket() {
         int s1;
 
-        s1 = openSocket();
+        if (ipv == 4) {
+                s1 = open4Socket();
+        } else {
+                s1 = open6Socket();
+        }
 
         for (;;) {
                 fd_set ready;
@@ -179,7 +214,7 @@ debugSocket()
                                 handle6Socket(s1);
                         }
                 } else {
-                        (void)printf("Idly sitting here, waiting for connections...\n");
+                        (void) printf("Idly sitting here, waiting for connections...\n");
                 }
         }
 }
