@@ -184,8 +184,7 @@ handle6Socket(int s) {
         close(socketFd);
 }
 
-
-int
+void
 selectSocket()
 {
         int socket;
@@ -233,7 +232,7 @@ debugSocket()
                 if (ipv == 4) {
                         handle4Socket(socket);
                 } else {
-                        socket = handle6Socket(socket);
+                        handle6Socket(socket);
                 }
         }
 }

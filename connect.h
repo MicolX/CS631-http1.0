@@ -39,10 +39,10 @@ handle4Socket(int s);
 void
 handle6Socket(int s);
 
-int
+void
 selectSocket();
 
-int
+void
 debugSocket();
 
 
