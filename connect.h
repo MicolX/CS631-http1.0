@@ -16,9 +16,16 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "connect.h"
+#include "log.h"
+#include "sws.h"
+
+
 #define DEBUG_BACKLOG 5      //TODO: how to determine backlog size?
 #define SLEEP 5			//TODO: remove
 
+int
+verifyIp(const char *str);
 
 int
 openSocket();
@@ -28,5 +35,7 @@ handleSocket(int s);
 
 int
 debugSocket();
+
+
 
 #endif
