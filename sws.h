@@ -6,15 +6,20 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <libgen.h>
 #include <limits.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <syslog.h>     // for logging
+#include <syslog.h>
 #include <unistd.h>
 
-extern int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, port, logFd;
-extern char **environ, *dir, *addr, *file;
+#include "connect.h"
+#include "log.h"
+#include "sws.h"
+
+extern int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, port, logFd, ipv;
+extern char **environ, *dir, *addr, *file, *ipAddr;
 
 
 

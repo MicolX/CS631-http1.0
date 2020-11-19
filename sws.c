@@ -1,8 +1,7 @@
-#include "connect.h"
-#include "sws.h"
 
-int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, port = 8080, logFd;
-char *dir, *addr, *file;
+
+int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, port = 8080, logFd = 1, ipv;      //TODO: change logfd from stdout
+char *dir, *addr, *file, *ipAddr;
 
 
 int
@@ -15,10 +14,6 @@ main(int argc, char **argv)
                 if ((opt = getopt(argc, argv, "c:dhi:l:p:")) != -1) {
                         switch (opt) {
                                 case 'c':
-//                                        if (optarg == NULL) {
-//                                                fprintf(stderr, "-%c: missing argument\n", opt);
-//                                                exit(EXIT_FAILURE);
-//                                        }
                                         dir = optarg;
                                         c_opt = 1;
                                         break;
@@ -34,24 +29,30 @@ main(int argc, char **argv)
                                         exit(EXIT_SUCCESS);
 
                                 case 'i':
-                                        addr = optarg;  //TODO: validate if proper IPv4/IPv6 using inet_pton(3)
+                                        ipv = verifyIp(optarg, char &ipAddr);
+                                        if (ipv == -1) {
+                                                fprintf(stderr, "%s: invalid IP Address '%s'\n", argv[0], optarg);
+                                                exit(EXIT_FAILURE);
+                                        }
                                         i_opt = 1;
                                         break;
 
                                 case 'l':
-//                                        if (optarg == NULL) {
-//                                                fprintf(stderr, "-%c: missing argument\n", opt);
-//                                                exit(EXIT_FAILURE);
-//                                        }
                                         file = optarg;
+                                        if((logFd = open(file, O_WRONLY | O_CREAT | O_APPEND, S_IRWXU)) <==> -1) {
+                                                if ((logFd = openat(logFd, basename(path), O_WRONLY  | O_CREAT | O_APPEND, S_IRWXU)) < 0) {
+                                                        fprintf(stderr, "%s: invalid logging file '%s': %s\n", argv[0], optarg, strerror(errno));
+                                                        exit(EXIT_FAILURE);
+                                                }
+                                                fprintf(stderr, "%s: invalid logging file '%s': %s\n", argv[0], optarg, strerror(errno));
+                                                exit(EXIT_FAILURE);
+                                        } else {
+                                                if ((logFd = openat(file, basename())))
+                                        }
                                         l_opt = 1;
                                         break;
 
                                 case 'p':
-//                                        if (optarg == NULL) {
-//                                                fprintf(stderr, "-%c: missing argument\n", opt);
-//                                                exit(EXIT_FAILURE);
-//                                        }
                                         port = (int)strtol(optarg, &temp, 10);
                                         errno = 0;
 					if ((temp == optarg) || (errno != 0)) {
@@ -130,6 +131,10 @@ main(int argc, char **argv)
 
 
 
+        if (close(logFd) != 0){
+                perror("close");
+                exit(EXIT_FAILURE);
+        }
 
 }
 
