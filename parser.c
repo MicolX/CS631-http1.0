@@ -2,7 +2,8 @@
 
 #define LIMIT 2
 #define SIZE 1
-#define VERSION "HTTP/1.0"
+#define VERSION10 "HTTP/1.0"
+#define VERSION09 "HTTP/0.9"
 
 const char* Headers[SIZE] = {
 	"If-Modified-Since: ",
@@ -12,42 +13,42 @@ int
 getrline(char *p, const char *end, Request *req) {
 	char *q;
 	if (strncmp(p, "GET ", 4) == 0) {
-		(void)strlcpy(req->method, p, 4);
+		req->method = 'G';
 		p += 4;
 	} else if (strncmp(p, "HEAD ", 5) == 0) {
-		(void)strlcpy(req->method, p, 5);
+		req->method = 'H';
 		p += 5;
 	} else {
-		// should set error message here
+		req->errcode = 501;
 		return -1;
 	}
 
 	if (p >= end) {
-		// should set error message here
+		req->errcode = 400;
 		return -1;
 	}
 
+	// when the version is 0.9
 	if ((q = strchr(p, (int)' ')) == NULL) {
-		if ((q = strchr(p, (int)'\r')) == NULL || q != end) {
-			// should set error message here
-			return -1;
-		}
+		(void)strlcpy(req->uri, p, end - p + 1);
+		req->version = 0.9;
+		return 0;
 	}
 	
 	(void)strlcpy(req->uri, p, q - p + 1);
 	
-	if (q[0] == ' ') {
-		p = q + 1;
-		if (p + 8 != end) {
-			// should set error message here
-			return -1;
-		}
-		if (strncmp(p, VERSION, 8) == 0) {
-			(void)strlcpy(req->version, VERSION, 9);
-		} else {
-			// should set error message here
-			return -1;
-		}
+	p = q + 1;
+	if (p + 8 != end) {
+		req->errcode = 400;
+		return -1;
+	}
+	if (strncmp(p, VERSION10, 8) == 0) {
+		req->version = 1.0;
+	} else if (strncmp(p, VERSION09, 8) == 0) {
+		req->version = 0.9;
+	} else {
+		req->errcode = 400;
+		return -1;
 	}
 
 	return 0;
@@ -55,9 +56,13 @@ getrline(char *p, const char *end, Request *req) {
 
 int
 getrheader(char *p, const char *end, Request *req) {
+	if (p == end) {
+		req->errcode = 400;
+		return -1;
+	}
+
 	char *q;
 	if ((q = strchr(p, (int)' ')) == NULL) {
-		// should set error message here
 		return -1;
 	}
 
@@ -71,7 +76,7 @@ getrheader(char *p, const char *end, Request *req) {
 		}
 	}
 	
-	// should set error message here
+	req->errcode = 400;
 	return -1;
 }
 
@@ -88,7 +93,7 @@ parse(char *request, Request *req) {
 		}
 		
 		if ((end - request >= len - 1) || (end[1] != '\n')) {
-			// should set error message here
+			req->errcode = 400;
 			return -1;
 		}
 		
@@ -107,12 +112,12 @@ parse(char *request, Request *req) {
 	}
 
 	if (line == 0) {
-		// should set error message here
+		req->errcode = 400;
 		return -1;
 	}
 
 	if (start - request != len - 1 || start[0] != '\n') {
-		// should set error message here
+		req->errcode = 400;
 		return -1;
 	}
 
@@ -127,12 +132,12 @@ main(int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 
-	if (parse("HEAD abc HTTP/1.0\r\nIf-Modified-Since: abc\r\n", req) == -1) {
+	if (parse("HEAD abc HTTP/0.9\r\n", req) == -1) {
 		printf("parse fail\n");
 	} else {
-		printf("method = %s\n", req->method);
+		printf("method = %c\n", req->method);
 		printf("uri = %s\n", req->uri);
-		printf("version = %s\n", req->version);
+		printf("version = %f\n", req->version);
 		printf("if-modified-since = %s\n", req->ifms);
 	}
 }

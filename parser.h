@@ -2,12 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef PARSER_H
+#define PARSER_H
+
 typedef struct request_t {
-	char method[5];
+	char method;
 	char uri[512];
-	char version[9];
+	float version;
 	char ifms[512];
 	char *body;
+	int errcode;
 } Request;
 
+
 int parse(char *, Request *);
+
+#endif
