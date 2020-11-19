@@ -1,6 +1,6 @@
 #include "sws.h"
 
-int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, port = 8080, logFd = 1, ipv;      //TODO: change logfd from stdout
+int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, port = 8080, logFd = 1, ipv = 6;      //TODO: change logfd from stdout and default IPv
 char *dir, *addr, *file, *ipAddr;
 
 
