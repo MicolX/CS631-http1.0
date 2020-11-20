@@ -7,11 +7,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "log.h"
+#include "connect.h"
 
 #ifndef PROCESS_H
 #define PROCESS_H
-
-#include "log.h"
 
 void
 daemonize(void);

@@ -3,9 +3,18 @@
 void
 daemonize(void)
 {
-        environ = NULL;
-
+	int pout[2], perr[2];
         pid_t pid;
+
+	if (pipe(pout) != 0) {
+		perror("stdout pipe");
+		exit(EXIT_FAILURE);
+	}
+
+	if (pipe(perr) != 0) {
+		perror("stderr pipe");
+		exit(EXIT_FAILURE);
+	}
 
         pid = fork();
 
@@ -14,12 +23,11 @@ daemonize(void)
                 exit(EXIT_FAILURE);
         }
 
-        if (pid > 0){
-                printf("successful fork \n");
+        if (pid > 0) {
+		printf("Server running on PID #%d\n", pid); 
                 exit(EXIT_SUCCESS);
         }
 
-        /* On success: The child process becomes session leader */
         if (setsid() < 0){
                 perror("setsid");
                 _exit(EXIT_FAILURE);
@@ -36,18 +44,33 @@ daemonize(void)
                 _exit(errno);
         }
 
-        /* Close file descriptors */
-        if (close(0) == -1) {
-                _exit(errno);
-        }
 
-        if (close(1) == -1) {
-                _exit(errno);
-        }
+	if (close(pout[0]) == -1) {
+		_exit(errno);
+	}
 
-        if (close(2) == -1) {
-                _exit(errno);
-        }
+	if (close(perr[0]) == -1) {
+		_exit(errno);
+	}
 
-        writeLog("success");
+	if (dup2(pout[1], 1) == -1) {
+		_exit(errno);
+	}
+	
+	if (dup2(perr[1], 2) == -1) {
+		_exit(errno);
+	}
+
+	if (close(pout[1]) == -1) {
+		_exit(errno);
+	}
+
+	if (close(perr[1]) == -1) {
+		_exit(errno);
+	}	
+	
+	for (;;) {
+		// selectSocket();
+	}
+
 }
