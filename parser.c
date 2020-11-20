@@ -96,7 +96,7 @@ parse(char *request, Request *req)
 			break;
 		}
 		
-		if ((end - request >= len - 1) || (end[1] != '\n')) {
+		if ((strlen(end) - strlen(request) >= len - 1) || (end[1] != '\n')) {
 			req->errcode = 400;
 			return -1;
 		}
@@ -120,7 +120,7 @@ parse(char *request, Request *req)
 		return -1;
 	}
 
-	if (start - request != len - 1 || start[0] != '\n') {
+	if (strlen(start) - strlen(request) != len - 1 || start[0] != '\n') {
 		req->errcode = 400;
 		return -1;
 	}
@@ -131,18 +131,18 @@ parse(char *request, Request *req)
 //int
 //main(int argc, char **argv)
 //{
-//	Request *req = (Request *)malloc(sizeof(Request));
-//	if (req == NULL) {
-//		fprintf(stderr, "malloc returns null\n");
-//		exit(EXIT_FAILURE);
-//	}
-//
-//	if (parse("HEAD abc HTTP/0.9\r\n", req) == -1) {
-//		printf("parse fail\n");
-//	} else {
-//		printf("method = %c\n", req->method);
-//		printf("uri = %s\n", req->uri);
-//		printf("version = %f\n", req->version);
-//		printf("if-modified-since = %s\n", req->ifms);
-//	}
+	//Request *req = (Request *)malloc(sizeof(Request));
+	//if (req == NULL) {
+		//fprintf(stderr, "malloc returns null\n");
+		//exit(EXIT_FAILURE);
+	//}
+
+	//if (parse("HEAD abc HTTP/0.9\r\n", req) == -1) {
+		//printf("parse fail\n");
+	//} else {
+		//printf("method = %c\n", req->method);
+		//printf("uri = %s\n", req->uri);
+		//printf("version = %f\n", req->version);
+		//printf("if-modified-since = %s\n", req->ifms);
+	//}
 //}
