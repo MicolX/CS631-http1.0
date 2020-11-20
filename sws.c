@@ -18,7 +18,7 @@ main(int argc, char **argv)
                                         cgiDir = optarg;
                                         dirTest = opendir(cgiDir);
                                         if (dir) {
-                                                closedir(cgiDir);
+                                                closedir(dirTest);
                                         } else {
                                                 fprintf(stderr, "%s: invalid directory '%s'\n", argv[0], cgiDir);
                                                 exit(EXIT_FAILURE);
@@ -77,7 +77,7 @@ main(int argc, char **argv)
                 /* Check if dir is valid */
                 dirTest = opendir(dir);
                 if (dir) {
-                        closedir(dir);
+                        closedir(dirTest);
                 } else {
                         fprintf(stderr, "%s: invalid directory '%s'\n", argv[0], dir);
                         exit(EXIT_FAILURE);
