@@ -1,6 +1,6 @@
 #include "sws.h"
 
-int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, port = 8080, logFd = 1, ipv = 6;      //TODO: change logfd from stdout and default IPv
+int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd, port = 8080, ipv = 6;      
 char *dir, *cgiDir, *addr, *file, *ipAddr;
 
 
@@ -67,22 +67,20 @@ main(int argc, char **argv)
                 }
         }
 
+	if ((d_opt == 0) && (l_opt == 0)) {	/* No logging, redirect logFd to /dev/null */
+		if ((logFd = open("/dev/null", O_WRONLY)) == -1) {
+			perror("redirect log to /dev/null");
+			exit(EXIT_FAILURE);
+		}
+	}
+
         if (d_opt == 1) {
-                debugSocket();
+		debugSocket();
         } else {
                 daemonize();
         }
-
-
-
-
-
-
-
-        if (close(logFd) != 0){
-                perror("close");
-                exit(EXIT_FAILURE);
-        }
+	
+	//printf("Server started on Port #%d\n", ntohs(port));
 
 }
 
