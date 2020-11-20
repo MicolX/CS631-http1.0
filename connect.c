@@ -200,11 +200,11 @@ handle6Socket(int s) {
                         //printf("From %s: %s", connectionIP, buf);
                         Request *req = (Request *)malloc(sizeof(Request));
                         if (req == NULL) {
-                                fprintf(stderr, "malloc returns null\n");
+                                writeLog("malloc returns null\n");
                                 exit(EXIT_FAILURE);
                         }
                         if (parse(buf, req) == -1) {
-                                printf("parse fail\n");
+                                writeLog("parse fail\n");
                         } else {
                                 writeLog("parse success\n");
 //                                printf("method = %c\n", req->method);
