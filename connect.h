@@ -1,3 +1,6 @@
+#ifndef CONNECT_H
+#define CONNECT_H
+
 #include <arpa/inet.h>
 
 #include <sys/types.h>
@@ -16,9 +19,6 @@
 #include "connect.h"
 #include "log.h"
 #include "sws.h"
-
-#ifndef CS631_HTTP1_0_CONNECT_H
-#define CS631_HTTP1_0_CONNECT_H
 
 #define DEBUG_BACKLOG 10
 #define SLEEP 5
@@ -43,7 +43,5 @@ selectSocket();
 
 void
 debugSocket();
-
-
 
 #endif

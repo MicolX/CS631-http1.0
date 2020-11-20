@@ -102,8 +102,13 @@ open6Socket() {
                 perror("getsockname6");
                 exit(EXIT_FAILURE);
         }
+	
+	writeLog("open my socket");
 
-        printf("Created Socket on Port #%d\n", ntohs(port));
+	char str[100];
+	snprintf(str, sizeof str, "%lu \n", (unsigned long)ntohs(port));
+        writeLog(str);
+	//printf("Created Socket on Port #%d\n", ntohs(port));
 
         if (listen(sock, DEBUG_BACKLOG) < 0) {
                 perror("listen6");
@@ -194,6 +199,8 @@ selectSocket()
         } else {
                 socket = open6Socket();
         }
+
+	printf("ipv = %d\n", ipv);
 
         for (;;) {
                 fd_set ready;
