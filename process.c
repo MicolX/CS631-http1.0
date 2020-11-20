@@ -70,7 +70,7 @@ daemonize(void)
 	}	
 	
 	for (;;) {
-		// selectSocket();
+		selectSocket();
 	}
 
 }
