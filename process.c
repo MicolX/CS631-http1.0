@@ -40,8 +40,9 @@ daemonize(void)
         umask(0);
 
         if (chdir(dir) != 0) {
-                perror("changing daemon directory");
-                _exit(errno);
+                //perror("changing daemon directory");
+                writeLog("dir error");
+		_exit(errno);
         }
 
 

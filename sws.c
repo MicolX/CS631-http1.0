@@ -17,8 +17,9 @@ main(int argc, char **argv)
                                 case 'c':
                                         cgiDir = optarg;
                                         dirTest = opendir(cgiDir);
-                                        if (dir) {
+                                        if (dirTest) {
                                                 closedir(dirTest);
+						dirTest = NULL;
                                         } else {
                                                 fprintf(stderr, "%s: invalid directory '%s'\n", argv[0], cgiDir);
                                                 exit(EXIT_FAILURE);
@@ -71,18 +72,20 @@ main(int argc, char **argv)
                                         fprintf(stderr, "%s: invalid option '%c'\n", argv[0], opt);
                                         exit(EXIT_FAILURE);
                         }
-                }
-                dir = argv[optind];
-
-                /* Check if dir is valid */
-                dirTest = opendir(dir);
-                if (dir) {
-                        closedir(dirTest);
                 } else {
-                        fprintf(stderr, "%s: invalid directory '%s'\n", argv[0], dir);
-                        exit(EXIT_FAILURE);
-                }
-        }
+                	dir = argv[optind];
+			
+			/* Check if dir is valid */
+                	dirTest = opendir(dir);
+                	if (dirTest) {
+                  		closedir(dirTest);
+                	} else {
+                 	 	fprintf(stderr, "%s: invalid directory '%s'\n", argv[0], dir);
+                    		exit(EXIT_FAILURE);
+                	}
+			optind++;
+       		} 
+	}
 
 	if ((d_opt == 0) && (l_opt == 0)) {	/* No logging, redirect logFd to /dev/null */
 		if ((logFd = open("/dev/null", O_WRONLY)) == -1) {
