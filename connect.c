@@ -192,7 +192,7 @@ handle6Socket(int s) {
                         if (parse(buf, req) == -1) {
                                 printf("parse fail\n");
                         } else {
-                                logFd("parse success\n");
+                                writeLog("parse success\n");
 //                                printf("method = %c\n", req->method);
 //                                printf("uri = %s\n", req->uri);
 //                                printf("version = %f\n", req->version);
