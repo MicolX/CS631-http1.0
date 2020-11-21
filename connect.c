@@ -147,13 +147,16 @@ handle4Socket(int s) {
                 } else if (reader == 0) {
                         printf("%s Disconnected\n", connectionIP);
                 } else {
-                        //printf("From %s: %s", connectionIP, buf);
+                        printf("From %s: %s\n", connectionIP, buf);
+
                         Request *req = (Request *)malloc(sizeof(Request));
                         if (req == NULL) {
                                 fprintf(stderr, "malloc returns null\n");
                                 exit(EXIT_FAILURE);
                         }
+
                         if (parse(buf, req) == -1) {
+                        		printf("From %s: %s\n", connectionIP, buf);
                                 printf("parse fail\n");
                         } else {
                                 printf("parse success\n");
@@ -206,7 +209,7 @@ handle6Socket(int s) {
                         if (parse(buf, req) == -1) {
                                 printf("parse fail\n");
                         } else {
-                                writeLog("parse success\n");
+                                printf("parse success\n");
 //                                printf("method = %c\n", req->method);
 //                                printf("uri = %s\n", req->uri);
 //                                printf("version = %f\n", req->version);
@@ -247,8 +250,10 @@ selectSocket()
                                 handle4Socket(socket);
                         } else {
                                 handle6Socket(socket);
-                        }
-                }
+						}
+                } else {
+					printf("Idly sitting here, waiting for connections...\n");
+				}
         }
 }
 
@@ -265,7 +270,7 @@ debugSocket()
 
         for (;;) {
                 if (ipv == 4) {
-                        handle4Socket(socket);
+            		handle4Socket(socket);
                 } else {
                         handle6Socket(socket);
                 }
