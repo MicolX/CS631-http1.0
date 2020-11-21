@@ -13,12 +13,13 @@ int
 getrline(char *p, const char *end, Request *req) {
 	char *q;
 	if (strncmp(p, "GET ", 4) == 0) {
-		req->method = 'G';
+		req->method = GET;
 		p += 4;
 	} else if (strncmp(p, "HEAD ", 5) == 0) {
-		req->method = 'H';
+		req->method = HEAD;
 		p += 5;
 	} else {
+		req->method = UNSUPPORT;
 		req->errcode = 501;
 		return -1;
 	}

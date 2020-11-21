@@ -5,12 +5,17 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+typedef enum Method {
+	GET,
+	HEAD,
+	UNSUPPORT
+} Method;
+
 typedef struct request_t {
-	char method;
+	enum Method method;
 	char uri[512];
 	float version;
 	char ifms[512];
-	char *body;
 	int errcode;
 } Request;
 
