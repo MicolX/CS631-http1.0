@@ -108,7 +108,6 @@ open6Socket() {
 	char str[100];
 	snprintf(str, sizeof str, "%lu \n", (unsigned long)ntohs(port));
         writeLog(str);
-	//printf("Created Socket on Port #%d\n", ntohs(port));
 
         if (listen(sock, DEBUG_BACKLOG) < 0) {
                 perror("listen6");
@@ -205,20 +204,16 @@ handle6Socket(int s) {
                                 printf("parse fail\n");
                         } else {
                                 printf("parse success\n");
-								Response *res = (Response *)malloc(sizeof(Response));
-								if (respond(rootfd, req, res) < 0) {
-									printf("compose response failed\n");
-								} else {
-									if (reply(socketFd, rootfd, req, res) < 0) {
-										printf("reply failed\n");
-									} else {
-										printf("replay successfull!\n");
-									}
-								}
-//                                printf("method = %c\n", req->method);
-//                                printf("uri = %s\n", req->uri);
-//                                printf("version = %f\n", req->version);
-//                                printf("if-modified-since = %s\n", req->ifms);
+				Response *res = (Response *)malloc(sizeof(Response));
+				if (respond(rootfd, req, res) < 0) {
+					printf("compose response failed\n");
+				} else {
+					if (reply(socketFd, rootfd, req, res) < 0) {
+						printf("reply failed\n");
+					} else {
+						printf("replay successfull!\n");
+					}
+				}
                         }
                 }
         } while (reader != 0);

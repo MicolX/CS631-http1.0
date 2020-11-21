@@ -76,7 +76,7 @@ main(int argc, char **argv)
                 	dir = argv[optind];
 
 			if (dir == NULL) {	/* Assume this current directory */
-				dir = ".";
+				dir = "/";
 			}
 
 			/* Check if dir is valid */
