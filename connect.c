@@ -103,10 +103,10 @@ open6Socket() {
                 exit(EXIT_FAILURE);
         }
 	
-	writeLog("##Server Hosted on Port #\n");
+	writeLog("##Server Hosted on Port #");
 
 	char str[100];  /* Temporary for testing purposes */
-	snprintf(str, sizeof str, "%lu\n", (unsigned long)ntohs(port));
+	snprintf(str, sizeof str, "%lu\n\n", (unsigned long)ntohs(port));
         writeLog(str);
 
         if (listen(sock, DEBUG_BACKLOG) < 0) {
@@ -184,7 +184,7 @@ handle6Socket(int s) {
                 perror("inet_ntop6");
                 return;
         } else {
-                writeLong("##CONNECTION FROM from ")
+                writeLog("##CONNECTION FROM ");
 
                 char str[100];  /* Temporary for testing purposes */
                 snprintf(str, sizeof str, "%s\n", connectionIP);
@@ -198,10 +198,10 @@ handle6Socket(int s) {
                         perror("read6");
                 } else if (reader == 0) {
                         char str[100];  /* Temporary for testing purposes */
-                        snprintf(str, sizeof str, "##%s\n", connectionIP);
+                        snprintf(str, sizeof str, "\n##%s", connectionIP);
                         writeLog(str);
 
-                        printf(" DISCONNECTED\n", connectionIP);
+                        writeLog(" DISCONNECTED\n");
 
                 } else {
                         Request *req = (Request *)malloc(sizeof(Request));
