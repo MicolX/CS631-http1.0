@@ -116,7 +116,7 @@ void
 handle4Socket(int s) {
         int socketFd, reader;
         socklen_t socklen;
-        const char *rip;
+        const char *connectionIP;
 
         char addr[INET_ADDRSTRLEN];
         struct sockaddr_in client;
@@ -127,11 +127,11 @@ handle4Socket(int s) {
                 return;
         }
 
-        if ((rip = inet_ntop(PF_INET, &(client.sin_addr), addr, INET_ADDRSTRLEN)) == NULL) {
+        if ((connectionIP = inet_ntop(PF_INET, &(client.sin_addr), addr, INET_ADDRSTRLEN)) == NULL) {
                 perror("inet_ntop");
-                rip = "unknown";
+                connectionIP = "unknown";
         } else {
-                printf("client connected from %s\n", rip);
+                printf("client connected from %s\n", connectionIP);
         }
 
         do {
@@ -140,9 +140,9 @@ handle4Socket(int s) {
                 if ((reader = read(socketFd, buf, BUFSIZ)) < 0) {
                         perror("error reading stream message");
                 } else if (reader == 0) {
-                        printf("ending connection from %s\n", rip);
+                        printf("ending connection from %s\n", connectionIP);
                 } else {
-                        printf("Client %s sent: %s", rip, buf);
+                        printf("Client %s sent: %s", connectionIP, buf);
                 }
         } while (reader != 0);
         close(socketFd);
@@ -152,7 +152,7 @@ void
 handle6Socket(int s) {
         int socketFd, reader;
         socklen_t socklen;
-        const char *rip;
+        const char *connectionIP;
 
         char addr[INET6_ADDRSTRLEN];
         struct sockaddr_in6 client;
@@ -163,11 +163,11 @@ handle6Socket(int s) {
                 return;
         }
 
-        if ((rip = inet_ntop(PF_INET6, &(client.sin6_addr), addr, INET6_ADDRSTRLEN)) == NULL) {
+        if ((connectionIP = inet_ntop(PF_INET6, &(client.sin6_addr), addr, INET6_ADDRSTRLEN)) == NULL) {
                 perror("inet_ntop");
-                rip = "unknown";
+                return;
         } else {
-                printf("client connected from %s\n", rip);
+                printf("client connected from %s\n", connectionIP);
         }
 
         do {
@@ -176,9 +176,9 @@ handle6Socket(int s) {
                 if ((reader = read(socketFd, buf, BUFSIZ)) < 0) {
                         perror("error reading stream message");
                 } else if (reader == 0) {
-                        printf("ending connection from %s\n", rip);
+                        printf("ending connection from %s\n", connectionIP);
                 } else {
-                        printf("Client %s sent: %s", rip, buf);
+                        printf("Client %s sent: %s", connectionIP, buf);
                 }
         } while (reader != 0);
         close(socketFd);
@@ -186,13 +186,14 @@ handle6Socket(int s) {
 
 
 int
-debugSocket() {
-        int s1;
+selectSocket()
+{
+        int socket;
 
         if (ipv == 4) {
-                s1 = open4Socket();
+                socket = open4Socket();
         } else {
-                s1 = open6Socket();
+                socket = open6Socket();
         }
 
         for (;;) {
@@ -200,21 +201,39 @@ debugSocket() {
                 struct timeval to;
 
                 FD_ZERO(&ready);
-                FD_SET(s1, &ready);
+                FD_SET(socket, &ready);
                 to.tv_sec = SLEEP;
                 to.tv_usec = 0;
-                if (select(s1 + 1, &ready, 0, 0, &to) < 0) {
+                if (select(socket + 1, &ready, 0, 0, &to) < 0) {
                         perror("select");
                         continue;
                 }
-                if (FD_ISSET(s1, &ready)) {
+                if (FD_ISSET(socket, &ready)) {
                         if (ipv == 4) {
-                                handle4Socket(s1);
+                                handle4Socket(socket);
                         } else {
-                                handle6Socket(s1);
+                                handle6Socket(socket);
                         }
+                }
+        }
+}
+
+void
+debugSocket()
+{
+        int socket;
+
+        if (ipv == 4) {
+                socket = open4Socket();
+        } else {
+                socket = open6Socket();
+        }
+
+        for (;;) {
+                if (ipv == 4) {
+                        handle4Socket(socket);
                 } else {
-                        (void) printf("Idly sitting here, waiting for connections...\n");
+                        socket = handle6Socket(socket);
                 }
         }
 }
