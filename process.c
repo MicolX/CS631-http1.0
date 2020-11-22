@@ -39,8 +39,8 @@ daemonize(void)
 
         umask(0);
 
-        if (chdir("/") != 0) {     // based on CWD
-                perror("error changing directory to safe place");
+        if (chdir(dir) != 0) {
+                perror("changing daemon directory");
                 _exit(errno);
         }
 
