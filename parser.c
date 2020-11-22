@@ -1,16 +1,17 @@
 #include "parser.h"
 
 #define LIMIT 2
-#define SIZE 1
+#define HEADERSIZE 1
 #define VERSION10 "HTTP/1.0"
 #define VERSION09 "HTTP/0.9"
 
-const char* Headers[SIZE] = {
+const char* Headers[HEADERSIZE] = {
 	"If-Modified-Since: ",
 };
 
 int
-getrline(char *p, const char *end, Request *req) {
+getrline(char *p, const char *end, Request *req)
+{
 	char *q;
 	if (strncmp(p, "GET ", 4) == 0) {
 		req->method = 'G';
@@ -55,7 +56,8 @@ getrline(char *p, const char *end, Request *req) {
 }
 
 int
-getrheader(char *p, const char *end, Request *req) {
+getrheader(char *p, const char *end, Request *req)
+{
 	if (p == end) {
 		req->errcode = 400;
 		return -1;
@@ -66,7 +68,7 @@ getrheader(char *p, const char *end, Request *req) {
 		return -1;
 	}
 
-	for (int i = 0; i < SIZE; i++) {
+	for (int i = 0; i < HEADERSIZE; i++) {
 		if (strncmp(Headers[i], p, q - p) == 0) {
 			if (strncmp(p, "If-Modified-Since: ", sizeof("If-Modified-Since:")) == 0) {
 				q++;
@@ -81,7 +83,8 @@ getrheader(char *p, const char *end, Request *req) {
 }
 
 int
-parse(char *request, Request *req) {
+parse(char *request, Request *req)
+{
 	const size_t len = strlen(request);
 	char *start, *end;
 	int line = 0;
@@ -124,20 +127,21 @@ parse(char *request, Request *req) {
 	return 0;
 }
 
-int
-main(int argc, char **argv) {
-	Request *req = (Request *)malloc(sizeof(Request));
-	if (req == NULL) {
-		fprintf(stderr, "malloc returns null\n");
-		exit(EXIT_FAILURE);
-	}
-
-	if (parse("HEAD abc HTTP/0.9\r\n", req) == -1) {
-		printf("parse fail\n");
-	} else {
-		printf("method = %c\n", req->method);
-		printf("uri = %s\n", req->uri);
-		printf("version = %f\n", req->version);
-		printf("if-modified-since = %s\n", req->ifms);
-	}
-}
+//int
+//main(int argc, char **argv)
+//{
+//	Request *req = (Request *)malloc(sizeof(Request));
+//	if (req == NULL) {
+//		fprintf(stderr, "malloc returns null\n");
+//		exit(EXIT_FAILURE);
+//	}
+//
+//	if (parse("HEAD abc HTTP/0.9\r\n", req) == -1) {
+//		printf("parse fail\n");
+//	} else {
+//		printf("method = %c\n", req->method);
+//		printf("uri = %s\n", req->uri);
+//		printf("version = %f\n", req->version);
+//		printf("if-modified-since = %s\n", req->ifms);
+//	}
+//}
