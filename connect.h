@@ -1,6 +1,3 @@
-#ifndef CS631_HTTP1_0_CONNECT_H
-#define CS631_HTTP1_0_CONNECT_H
-
 #include <arpa/inet.h>
 
 #include <sys/types.h>
@@ -20,9 +17,11 @@
 #include "log.h"
 #include "sws.h"
 
+#ifndef CS631_HTTP1_0_CONNECT_H
+#define CS631_HTTP1_0_CONNECT_H
 
-#define DEBUG_BACKLOG 5      //TODO: how to determine backlog size?
-#define SLEEP 5			//TODO: remove
+#define DEBUG_BACKLOG 10
+#define SLEEP 5
 
 int
 verifyIp(const char *str);

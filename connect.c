@@ -38,25 +38,25 @@ open4Socket() {
         }
 
         if ((sock = socket(type, SOCK_STREAM, 0)) < 0) {
-                perror("error getting socket stream");
+                perror("socket4");
                 exit(EXIT_FAILURE);
         }
 
         if (bind(sock, (struct sockaddr *) &sockaddr, sizeof(sockaddr)) != 0) {
-                perror("error binding the socket stream");
+                perror("bind4");
                 exit(EXIT_FAILURE);
         }
 
         socklen = sizeof(sockaddr);
         if (getsockname(sock, (struct sockaddr *) &sockaddr, &socklen) != 0) {
-                perror("error getting socket name");
+                perror("getsockname4");
                 exit(EXIT_FAILURE);
         }
 
-        printf("socket has port #%d\n", ntohs(port));
+        printf("Created Socket on Port #%d\n", ntohs(port));
 
         if (listen(sock, DEBUG_BACKLOG) < 0) {
-                perror("listening");
+                perror("listen4");
                 exit(EXIT_FAILURE);
         }
         return sock;
@@ -88,25 +88,25 @@ open6Socket() {
 
 
         if ((sock = socket(type, SOCK_STREAM, 0)) < 0) {
-                perror("error getting socket stream");
+                perror("socket6");
                 exit(EXIT_FAILURE);
         }
 
         if (bind(sock, (struct sockaddr *) &sockaddr, sizeof(sockaddr)) != 0) {
-                perror("error binding the socket stream");
+                perror("bind6");
                 exit(EXIT_FAILURE);
         }
 
         socklen = sizeof(sockaddr);
         if (getsockname(sock, (struct sockaddr *) &sockaddr, &socklen) != 0) {
-                perror("error getting socket name");
+                perror("getsockname6");
                 exit(EXIT_FAILURE);
         }
 
-        printf("socket has port #%d\n", ntohs(port));
+        printf("Created Socket on Port #%d\n", ntohs(port));
 
         if (listen(sock, DEBUG_BACKLOG) < 0) {
-                perror("listening");
+                perror("listen6");
                 exit(EXIT_FAILURE);
         }
         return sock;
@@ -123,26 +123,26 @@ handle4Socket(int s) {
 
         socklen = sizeof(client);
         if ((socketFd = accept(s, (struct sockaddr *) &client, &socklen)) < 0) {
-                perror("accept");
+                perror("accept4");
                 return;
         }
 
         if ((connectionIP = inet_ntop(PF_INET, &(client.sin_addr), addr, INET_ADDRSTRLEN)) == NULL) {
-                perror("inet_ntop");
-                connectionIP = "unknown";
+                perror("inet_ntop4");
+                return;
         } else {
-                printf("client connected from %s\n", connectionIP);
+                printf("Connection from %s\n", connectionIP);
         }
 
         do {
                 char buf[BUFSIZ];
                 bzero(buf, sizeof(buf));
                 if ((reader = read(socketFd, buf, BUFSIZ)) < 0) {
-                        perror("error reading stream message");
+                        perror("read4");
                 } else if (reader == 0) {
-                        printf("ending connection from %s\n", connectionIP);
+                        printf("%s Disconnected\n", connectionIP);
                 } else {
-                        printf("Client %s sent: %s", connectionIP, buf);
+                        printf("From %s: %s", connectionIP, buf);
                 }
         } while (reader != 0);
         close(socketFd);
@@ -159,26 +159,26 @@ handle6Socket(int s) {
 
         socklen = sizeof(client);
         if ((socketFd = accept(s, (struct sockaddr *) &client, &socklen)) < 0) {
-                perror("accept");
+                perror("accept6");
                 return;
         }
 
         if ((connectionIP = inet_ntop(PF_INET6, &(client.sin6_addr), addr, INET6_ADDRSTRLEN)) == NULL) {
-                perror("inet_ntop");
+                perror("inet_ntop6");
                 return;
         } else {
-                printf("client connected from %s\n", connectionIP);
+                printf("Connection from %s\n", connectionIP);
         }
 
         do {
                 char buf[BUFSIZ];
                 bzero(buf, sizeof(buf));
                 if ((reader = read(socketFd, buf, BUFSIZ)) < 0) {
-                        perror("error reading stream message");
+                        perror("read6");
                 } else if (reader == 0) {
-                        printf("ending connection from %s\n", connectionIP);
+                        printf("%s Disconnected\n", connectionIP);
                 } else {
-                        printf("Client %s sent: %s", connectionIP, buf);
+                        printf("From %s: %s", connectionIP, buf);
                 }
         } while (reader != 0);
         close(socketFd);
@@ -204,7 +204,7 @@ selectSocket()
                 to.tv_sec = SLEEP;
                 to.tv_usec = 0;
                 if (select(socket + 1, &ready, 0, 0, &to) < 0) {
-                        perror("select");
+                        perror("selectSocket select");
                         continue;
                 }
                 if (FD_ISSET(socket, &ready)) {
