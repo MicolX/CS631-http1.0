@@ -7,6 +7,7 @@ char *dir, *cgiDir, *addr, *file, *ipAddr;
 int
 main(int argc, char **argv)
 {
+        DIR *dirTest;
         char *temp = NULL;
 	char opt;
 
@@ -15,11 +16,17 @@ main(int argc, char **argv)
                         switch (opt) {
                                 case 'c':
                                         cgiDir = optarg;
+                                        dirTest = opendir(cgiDir);
+                                        if (dir) {
+                                                closedir(cgiDir);
+                                        } else {
+                                                fprintf(stderr, "%s: invalid directory '%s'\n", argv[0], cgiDir);
+                                                exit(EXIT_FAILURE);
+                                        }
                                         c_opt = 1;
                                         break;
 
                                 case 'd':
-                                        logFd = 1;
                                         d_opt = 1;
                                         break;
 
@@ -64,6 +71,16 @@ main(int argc, char **argv)
                                         fprintf(stderr, "%s: invalid option '%c'\n", argv[0], opt);
                                         exit(EXIT_FAILURE);
                         }
+                }
+                dir = argv[optind];
+
+                /* Check if dir is valid */
+                dirTest = opendir(dir);
+                if (dir) {
+                        closedir(dir);
+                } else {
+                        fprintf(stderr, "%s: invalid directory '%s'\n", argv[0], dir);
+                        exit(EXIT_FAILURE);
                 }
         }
 
