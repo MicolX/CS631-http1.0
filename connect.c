@@ -183,7 +183,21 @@ handle6Socket(int s) {
                 } else if (reader == 0) {
                         printf("%s Disconnected\n", connectionIP);
                 } else {
-                        printf("From %s: %s", connectionIP, buf);
+                        //printf("From %s: %s", connectionIP, buf);
+                        Request *req = (Request *)malloc(sizeof(Request));
+                        if (req == NULL) {
+                                fprintf(stderr, "malloc returns null\n");
+                                exit(EXIT_FAILURE);
+                        }
+                        if (parse(buf, req) == -1) {
+                                printf("parse fail\n");
+                        } else {
+                                logFd("parse success\n");
+//                                printf("method = %c\n", req->method);
+//                                printf("uri = %s\n", req->uri);
+//                                printf("version = %f\n", req->version);
+//                                printf("if-modified-since = %s\n", req->ifms);
+                        }
                 }
         } while (reader != 0);
         close(socketFd);

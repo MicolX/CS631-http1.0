@@ -18,6 +18,7 @@
 
 #include "connect.h"
 #include "log.h"
+#include "parser.h"
 #include "sws.h"
 
 #define DEBUG_BACKLOG 10
