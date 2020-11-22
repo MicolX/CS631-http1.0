@@ -1,5 +1,5 @@
-#ifndef CS631_HTTP1_0_CONNECT_H
-#define CS631_HTTP1_0_CONNECT_H
+#ifndef CONNECT_H
+#define CONNECT_H
 
 #include <arpa/inet.h>
 
@@ -18,24 +18,31 @@
 
 #include "connect.h"
 #include "log.h"
+#include "parser.h"
 #include "sws.h"
 
-
-#define DEBUG_BACKLOG 5      //TODO: how to determine backlog size?
-#define SLEEP 5			//TODO: remove
+#define DEBUG_BACKLOG 10
+#define SLEEP 5
 
 int
 verifyIp(const char *str);
 
 int
-openSocket();
-
-void
-handleSocket(int s);
+open4Socket();
 
 int
+open6Socket();
+
+void
+handle4Socket(int s);
+
+void
+handle6Socket(int s);
+
+void
+selectSocket();
+
+void
 debugSocket();
-
-
 
 #endif
