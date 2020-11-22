@@ -15,6 +15,7 @@
 #include <unistd.h>
 
 #include "connect.h"
+#include "process.h"
 #include "log.h"
 #include "sws.h"
 
