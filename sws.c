@@ -1,6 +1,6 @@
 #include "sws.h"
 
-int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd, port = 8080, ipv = 6;      
+int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd, port = 8080, ipv = 6, rootfd;      
 char *dir, *cgiDir, *addr, *file, *ipAddr;
 
 
@@ -75,10 +75,7 @@ main(int argc, char **argv)
 	dir = argv[optind];
 
 	/* Check if dir is valid */
-	dirTest = opendir(dir);
-	if (dirTest) {
-			closedir(dirTest);
-	} else {
+	if ((rootfd = open(dir, O_DIRECTORY)) < 0) {
 			fprintf(stderr, "%s: invalid directory '%s'\n", argv[0], dir);
 			exit(EXIT_FAILURE);
 	}

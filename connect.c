@@ -200,7 +200,7 @@ handle6Socket(int s) {
                 } else if (reader == 0) {
                         printf("%s Disconnected\n", connectionIP);
                 } else {
-                        //printf("From %s: %s", connectionIP, buf);
+                        printf("From %s: %s", connectionIP, buf);
                         Request *req = (Request *)malloc(sizeof(Request));
                         if (req == NULL) {
                                 fprintf(stderr, "malloc returns null\n");
@@ -210,6 +210,16 @@ handle6Socket(int s) {
                                 printf("parse fail\n");
                         } else {
                                 printf("parse success\n");
+								Response *res = (Response *)malloc(sizeof(Response));
+								if (respond(rootfd, req, res) < 0) {
+									printf("compose response failed\n");
+								} else {
+									if (reply(socketFd, rootfd, req, res) < 0) {
+										printf("reply failed\n");
+									} else {
+										printf("replay successfull!\n");
+									}
+								}
 //                                printf("method = %c\n", req->method);
 //                                printf("uri = %s\n", req->uri);
 //                                printf("version = %f\n", req->version);
