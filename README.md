@@ -5,6 +5,14 @@ Implementation of 'sws' command under BSD Unix system
 Team members: Mingyao Xiong, Liam Brew
 
 *** Updates ***
+
+--- Nov.23.2020 ---
+1. merge response.c into the project
+  - the server can now parse the request correctly and talks back, but the response message is 
+    not correct yet, It's very likely that the dir path is not set up properly. Additonal to
+	that, the chroot() should be called to lock the root directory. These will be solved in the
+	following updates.
+
 --- Nov.19.2020 ---
 1. combined separate branches into master
 2. settled on final snapshot work breakdown structure
