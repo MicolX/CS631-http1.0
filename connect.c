@@ -218,10 +218,17 @@ handle6Socket(int s) {
                         } else {
                                 writeLog("##VALID REQUEST\n");
                                 writeLog(buf);
-//                                printf("method = %c\n", req->method);
-//                                printf("uri = %s\n", req->uri);
-//                                printf("version = %f\n", req->version);
-//                                printf("if-modified-since = %s\n", req->ifms);
+
+                                Response *res = (Response *)malloc(sizeof(Response));
+                                if (respond(rootfd, req, res) < 0) {
+                                        printf("compose response failed\n");
+                                } else {
+                                        if (reply(socketFd, rootfd, req, res) < 0) {
+                                                printf("reply failed\n");
+                                        } else {
+                                                printf("replay successfull!\n");
+                                        }
+                                }
                         }
                 }
         } while (reader != 0);
