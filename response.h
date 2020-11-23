@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <magic.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -13,12 +14,14 @@
 #define RESPONSE_H
 
 typedef struct response_t {
-	char *status;
+	const char *status;
 	time_t lastmtime;
-	char contenttype[64];
+	const char *contenttype;
 	long long contentlength;
-	bool headonly;
+	int headonly;
 } Response;
 
 #endif
 
+int respond(int, Request *, Response *);
+int reply(int, int, Request *, Response *);

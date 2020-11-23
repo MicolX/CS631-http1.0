@@ -1,7 +1,7 @@
 #include "sws.h"
 
-int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd, port = 8080, ipv = 6;      
-char *dir = ".", *cgiDir, *addr, *file, *ipAddr;
+int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd, port = 8080, ipv = 6, rootfd;
+char *dir, *cgiDir, *addr, *file, *ipAddr;
 
 
 int
@@ -74,10 +74,10 @@ main(int argc, char **argv)
                         }
                 } else {
                 	dir = argv[optind];
-			
+
 			if (dir == NULL) {	/* Assume this current directory */
-				dir = ".";	
-			}	
+				dir = ".";
+			}
 
 			/* Check if dir is valid */
                 	dirTest = opendir(dir);
@@ -88,7 +88,7 @@ main(int argc, char **argv)
                     		exit(EXIT_FAILURE);
                 	}
 			optind++;
-       		} 
+       		}
 	}
 
 	if ((d_opt == 0) && (l_opt == 0)) {	/* No logging, redirect logFd to /dev/null */

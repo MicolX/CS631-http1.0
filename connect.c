@@ -53,7 +53,7 @@ open4Socket() {
                 exit(EXIT_FAILURE);
         }
 
-        printf("##Server Hosted on Port #%d\n", ntohs(port));
+        printf("Created Socket on Port #%d\n", ntohs(port));
 
         if (listen(sock, DEBUG_BACKLOG) < 0) {
                 perror("listen4");
@@ -103,11 +103,12 @@ open6Socket() {
                 exit(EXIT_FAILURE);
         }
 	
-	writeLog("##Server Hosted on Port #");
+	writeLog("open my socket");
 
-	char str[100];  /* Temporary for testing purposes */
-	snprintf(str, sizeof str, "%lu\n\n", (unsigned long)ntohs(port));
+	char str[100];
+	snprintf(str, sizeof str, "%lu \n", (unsigned long)ntohs(port));
         writeLog(str);
+	//printf("Created Socket on Port #%d\n", ntohs(port));
 
         if (listen(sock, DEBUG_BACKLOG) < 0) {
                 perror("listen6");
@@ -144,7 +145,7 @@ handle4Socket(int s) {
                 if ((reader = read(socketFd, buf, BUFSIZ)) < 0) {
                         perror("read4");
                 } else if (reader == 0) {
-                        printf("##%s DISCONNECTED\n", connectionIP);
+                        printf("%s Disconnected\n", connectionIP);
                 } else {
                         Request *req = (Request *)malloc(sizeof(Request));
                         if (req == NULL) {
@@ -154,7 +155,7 @@ handle4Socket(int s) {
                         if (parse(buf, req) == -1) {
                                 printf("##INVALID MESSAGE\n");
                         } else {
-                                printf("##VALID MESSAGE\n%s\n", buf);
+                                printf("parse success\n");
 //                                printf("method = %c\n", req->method);
 //                                printf("uri = %s\n", req->uri);
 //                                printf("version = %f\n", req->version);
@@ -184,11 +185,7 @@ handle6Socket(int s) {
                 perror("inet_ntop6");
                 return;
         } else {
-                writeLog("##CONNECTION FROM ");
-
-                char str[100];  /* Temporary for testing purposes */
-                snprintf(str, sizeof str, "%s\n", connectionIP);
-                writeLog(str);
+                printf("Connection from %s\n", connectionIP);
         }
 
         do {
@@ -197,23 +194,27 @@ handle6Socket(int s) {
                 if ((reader = read(socketFd, buf, BUFSIZ)) < 0) {
                         perror("read6");
                 } else if (reader == 0) {
-                        char str[100];  /* Temporary for testing purposes */
-                        snprintf(str, sizeof str, "\n##%s", connectionIP);
-                        writeLog(str);
-
-                        writeLog(" DISCONNECTED\n");
-
+                        printf("%s Disconnected\n", connectionIP);
                 } else {
                         Request *req = (Request *)malloc(sizeof(Request));
                         if (req == NULL) {
-                                writeLog("malloc returns null\n");
+                                fprintf(stderr, "malloc returns null\n");
                                 exit(EXIT_FAILURE);
                         }
                         if (parse(buf, req) == -1) {
-                                writeLog("##INVALID REQUEST\n");
+                                printf("parse fail\n");
                         } else {
-                                writeLog("##VALID REQUEST\n");
-                                writeLog(buf);
+                                printf("parse success\n");
+								Response *res = (Response *)malloc(sizeof(Response));
+								if (respond(rootfd, req, res) < 0) {
+									printf("compose response failed\n");
+								} else {
+									if (reply(socketFd, rootfd, req, res) < 0) {
+										printf("reply failed\n");
+									} else {
+										printf("replay successfull!\n");
+									}
+								}
 //                                printf("method = %c\n", req->method);
 //                                printf("uri = %s\n", req->uri);
 //                                printf("version = %f\n", req->version);
