@@ -146,11 +146,14 @@ handle4Socket(int s) {
                 } else if (reader == 0) {
                         printf("##%s DISCONNECTED\n", connectionIP);
                 } else {
+                        printf("From %s: %s\n", connectionIP, buf);
+
                         Request *req = (Request *)malloc(sizeof(Request));
                         if (req == NULL) {
                                 fprintf(stderr, "malloc returns null\n");
                                 exit(EXIT_FAILURE);
                         }
+
                         if (parse(buf, req) == -1) {
                                 printf("##INVALID MESSAGE\n");
                         } else {
@@ -204,6 +207,7 @@ handle6Socket(int s) {
                         writeLog(" DISCONNECTED\n");
 
                 } else {
+                        //printf("From %s: %s", connectionIP, buf);
                         Request *req = (Request *)malloc(sizeof(Request));
                         if (req == NULL) {
                                 writeLog("malloc returns null\n");

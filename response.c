@@ -37,7 +37,7 @@ respond(int rootfd, Request *req, Response *res) {
 	struct stat sb;
 	struct tm ifmtime;
 	int fd;
-
+	magic_t cookie;
 	
 	if (fstatat(rootfd, req->uri, &sb, AT_SYMLINK_NOFOLLOW) == -1) {
 		switch errno {
@@ -73,7 +73,25 @@ respond(int rootfd, Request *req, Response *res) {
 
 	res->contentlength = (long long)sb.st_size; 
 
-	// get content type
+	if ((fd = openat(rootfd, req->uri, O_RDONLY)) < 0) {
+		// log error
+		return -1;
+	}
+
+	if ((cookie = magic_open(MAGIC_MIME)) == NULL) {
+		// log error
+		(void)close(fd);
+		return -1;
+	}
+
+	if (magic_load(cookie, NULL) != 0) {
+		// log error
+		(void)magic_close(cookie);
+		(void)close(fd);
+		return -1;
+	}
+
+	res->contenttype = magic_descriptor(cookie, fd);	
 }
 	
 int
@@ -94,7 +112,6 @@ reply(int socket, int rootfd, Request *req, Response *res) {
 	}
 
 	if (req->version == 1.0) {
-		char message[256];
 		char curtime[32];
 		char mtime[32];
 		struct tm *curtm;
