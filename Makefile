@@ -1,23 +1,13 @@
-CC=cc
-CFLAGS= -Wall -Werror -Wextra -lmagic
-SOURCES := $(wildcard * .c)
-OBJECTS := $(patsubst %.c,%.o,$(SOURCES))
-DEPENDS := $(patsubst %.c,%.d,$(SOURCES))
+CC=	cc
+CFLAGS=	-g -Wall -Wextra -Werror 
+EXE=	sws
+OBJS=	connect.o log.o parser.o process.o response.o sws.o
 
-.PHONY: all clean
+all: ${EXE}
 
-all: sws
+
+$(EXE):	${OBJS} 
+	${CC} ${LDFLAGS} ${OBJS} -lmagic -o ${EXE}
 
 clean:
-        $(RM) $(OBJECTS) $(DEPENDS) sws
-
-sws:  $(OBJECTS)
-	    $(CC) $(CFLAGS) $^ -o $@
-
--include $(DEPENDS)
-
-%.o: %.c Makefile
-        $(CC) $(CFLAGS) -MMD -MP -c  $< -o $@
-
-
-
+	rm -f ${EXE} *.o
