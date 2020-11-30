@@ -53,7 +53,7 @@ open4Socket() {
                 exit(EXIT_FAILURE);
         }
 
-        printf("Created Socket on Port #%d\n", ntohs(port));
+        printf("##Server Hosted on Port #%d\n", ntohs(port));
 
         if (listen(sock, DEBUG_BACKLOG) < 0) {
                 perror("listen4");
@@ -103,10 +103,10 @@ open6Socket() {
                 exit(EXIT_FAILURE);
         }
 	
-	writeLog("open my socket");
+	writeLog("##Server Hosted on Port #");
 
-	char str[100];
-	snprintf(str, sizeof str, "%lu \n", (unsigned long)ntohs(port));
+	char str[100];  /* Temporary for testing purposes */
+	snprintf(str, sizeof str, "%lu\n\n", (unsigned long)ntohs(port));
         writeLog(str);
 
         if (listen(sock, DEBUG_BACKLOG) < 0) {
@@ -144,17 +144,20 @@ handle4Socket(int s) {
                 if ((reader = read(socketFd, buf, BUFSIZ)) < 0) {
                         perror("read4");
                 } else if (reader == 0) {
-                        printf("%s Disconnected\n", connectionIP);
+                        printf("##%s DISCONNECTED\n", connectionIP);
                 } else {
+                        printf("From %s: %s\n", connectionIP, buf);
+
                         Request *req = (Request *)malloc(sizeof(Request));
                         if (req == NULL) {
                                 fprintf(stderr, "malloc returns null\n");
                                 exit(EXIT_FAILURE);
                         }
+
                         if (parse(buf, req) == -1) {
                                 printf("##INVALID MESSAGE\n");
                         } else {
-                                printf("parse success\n");
+                                printf("##VALID MESSAGE\n%s\n", buf);
 //                                printf("method = %c\n", req->method);
 //                                printf("uri = %s\n", req->uri);
 //                                printf("version = %f\n", req->version);
@@ -184,7 +187,11 @@ handle6Socket(int s) {
                 perror("inet_ntop6");
                 return;
         } else {
-                printf("Connection from %s\n", connectionIP);
+                writeLog("##CONNECTION FROM ");
+
+                char str[100];  /* Temporary for testing purposes */
+                snprintf(str, sizeof str, "%s\n", connectionIP);
+                writeLog(str);
         }
 
         do {
@@ -193,27 +200,35 @@ handle6Socket(int s) {
                 if ((reader = read(socketFd, buf, BUFSIZ)) < 0) {
                         perror("read6");
                 } else if (reader == 0) {
-                        printf("%s Disconnected\n", connectionIP);
+                        char str[100];  /* Temporary for testing purposes */
+                        snprintf(str, sizeof str, "\n##%s", connectionIP);
+                        writeLog(str);
+
+                        writeLog(" DISCONNECTED\n");
+
                 } else {
+                        //printf("From %s: %s", connectionIP, buf);
                         Request *req = (Request *)malloc(sizeof(Request));
                         if (req == NULL) {
-                                fprintf(stderr, "malloc returns null\n");
+                                writeLog("malloc returns null\n");
                                 exit(EXIT_FAILURE);
                         }
                         if (parse(buf, req) == -1) {
-                                printf("parse fail\n");
+                                writeLog("##INVALID REQUEST\n");
                         } else {
-                                printf("parse success\n");
-				Response *res = (Response *)malloc(sizeof(Response));
-				if (respond(rootfd, req, res) < 0) {
-					printf("compose response failed\n");
-				} else {
-					if (reply(socketFd, rootfd, req, res) < 0) {
-						printf("reply failed\n");
-					} else {
-						printf("replay successfull!\n");
-					}
-				}
+                                writeLog("##VALID REQUEST\n");
+                                writeLog(buf);
+
+                                Response *res = (Response *)malloc(sizeof(Response));
+                                if (respond(rootfd, req, res) < 0) {
+                                        printf("compose response failed\n");
+                                } else {
+                                        if (reply(socketFd, rootfd, req, res) < 0) {
+                                                printf("reply failed\n");
+                                        } else {
+                                                printf("replay successfull!\n");
+                                        }
+                                }
                         }
                 }
         } while (reader != 0);

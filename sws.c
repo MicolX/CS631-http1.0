@@ -1,6 +1,6 @@
 #include "sws.h"
 
-int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd, port = 8080, ipv = 6, rootfd;
+int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd, port = 8080, ipv = 6;      
 char *dir, *cgiDir, *addr, *file, *ipAddr;
 
 
@@ -76,7 +76,7 @@ main(int argc, char **argv)
                 	dir = argv[optind];
 
 			if (dir == NULL) {	/* Assume this current directory */
-				dir = "/";
+				dir = ".";
 			}
 
 			/* Check if dir is valid */
