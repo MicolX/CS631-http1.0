@@ -1,7 +1,23 @@
-objects = sws.c connect.c log.c process.c parser.c response.c
+CC=cc
+CFLAGS= -Wall -Werror -Wextra -lmagic
+SOURCES := $(wildcard * .c)
+OBJECTS := $(patsubst %.c,%.o,$(SOURCES))
+DEPENDS := $(patsubst %.c,%.d,$(SOURCES))
 
-make : $(objects)
-	cc -g -Wall -Werror -Wextra -lmagic -o sws $(objects)
+.PHONY: all clean
 
-clean :
-	rm a.out sws.o connect.o log.o process.o parser.o
+all: sws
+
+clean:
+        $(RM) $(OBJECTS) $(DEPENDS) sws
+
+sws:  $(OBJECTS)
+	    $(CC) $(CFLAGS) $^ -o $@
+
+-include $(DEPENDS)
+
+%.o: %.c Makefile
+        $(CC) $(CFLAGS) -MMD -MP -c  $< -o $@
+
+
+
