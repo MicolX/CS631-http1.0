@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <fts.h>
 #include <magic.h>
+#include <pwd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -31,3 +32,4 @@ typedef struct response_t {
 int respond(char *, Request *, Response *);
 int reply(int, Request *, Response *);
 int runcgi(int, char *, char *);
+int userdirhandler(char *, char[]);

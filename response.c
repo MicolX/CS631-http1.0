@@ -236,10 +236,6 @@ runcgi(int socket, char *uri, char *dir) {
 		// log error
 		return -1;
 	} else if (pid == 0) {
-	//	if (setenv("PATH", dir, 1) != 0) {
-	//		// log error
-	//		return -1;
-	//	}
 
 		if (uri != NULL && strlen(uri) > 0) {	
 			char *var;
@@ -264,12 +260,43 @@ runcgi(int socket, char *uri, char *dir) {
 		char command[MAXPATHLEN];
 		snprintf(command, MAXPATHLEN, "%s", fullpath);
 		execl("/bin/sh", "sh", "-c", command, (char*) 0); 		
-//		execl(path, (char*) 0);
+		return -1;
 	}
 
 	(void)wait(NULL);
 	return 0;
 }
+
+int
+userdirhandler(char *uri, char newuri[]) {
+	char *before, *uname;
+	struct passwd *psw;
+
+	before = strsep(&uri, "~");
+	uname = strsep(&uri, "/");
+
+	if ((psw = getpwnam(uname)) == NULL) {
+		// log error
+		return -1;
+	}
+	
+	if (before != NULL && before[0] != '\0') {
+		if (uri != NULL) {
+			snprintf(newuri, MAXPATHLEN, "%s/%s/sws/%s", before, psw->pw_dir, uri);
+		} else {
+			snprintf(newuri, MAXPATHLEN, "%s/%s/sws", before, psw->pw_dir);
+		}
+	} else {
+		if (uri != NULL) {
+			snprintf(newuri, MAXPATHLEN, "%s/sws/%s", psw->pw_dir, uri);
+		} else {
+			snprintf(newuri, MAXPATHLEN, "%s/sws", psw->pw_dir);
+		}
+	}
+
+	return 0;
+}
+		
 
 int
 main(int argc, char **argv) {
@@ -278,10 +305,10 @@ main(int argc, char **argv) {
 	req->errcode = 0;
 	char *rootdir = "/home/mingyao/sws";
 	char *cgidir = "/home/mingyao/mid-term";
-	char *cgiuri = "/mxiong3/ls";
+	char *cgiuri = strdup("/mxiong3/ls");
 	int fd;
 
-	if (parse("GET /main/haha HTTP/1.0\r\nIf-Modified-Since: Fri, 04 Dec 2010 18:40:37 GMT\r\n", req) == -1) {
+	if (parse("GET /main HTTP/1.0\r\nIf-Modified-Since: Fri, 04 Dec 2010 18:40:37 GMT\r\n", req) == -1) {
 		printf("parse failed\n");
 		return 0;
 	}
@@ -336,6 +363,14 @@ main(int argc, char **argv) {
 		printf("cgi run succeed\n");
 	} else {
 		printf("cgi failed\n");
+	}
+
+	char *uri = strdup("~mingyao/main/index.html");
+	char new[MAXPATHLEN];
+	if (userdirhandler(uri, new) == -1) {
+		printf("handle failed\n");
+	} else {
+		printf("%s\n", new);
 	}
 
 	exit(EXIT_SUCCESS);
