@@ -66,6 +66,7 @@ respond(char *rootpath, Request *req, Response *res) {
 		
 		if (access(htmlpath, F_OK) != 0) {
 			res->dirindex = 1;
+			res->status = status[10];
 			strlcpy(req->uri, uri, MAXPATHLEN);
 			return 0;
 		} else {
@@ -99,20 +100,13 @@ respond(char *rootpath, Request *req, Response *res) {
 		}
 	}
 
-	
-	if (stat(uri, &sb) == -1) {
-		if (errno) {
-			// log error
-			return -1;
-		}
-	}
-
-	res->contentlength = (long long)sb.st_size; 
 
 	if ((fd = open(req->uri, O_RDONLY)) < 0) {
 		// log error
 		return -1;
 	}
+
+	res->contentlength = (long long)lseek(fd, 0, SEEK_END); 
 
 	if ((cookie = magic_open(MAGIC_MIME)) == NULL) {
 		// log error
@@ -129,6 +123,9 @@ respond(char *rootpath, Request *req, Response *res) {
 
 	res->contenttype = magic_descriptor(cookie, fd);	
 	res->status = status[0];
+	if (req->method == HEAD) {
+		res->headonly = 1;
+	}
 	return 0;
 }
 
@@ -148,36 +145,34 @@ reply(int socket, Request *req, Response *res) {
 	ssize_t readsize;
 	ssize_t writesize;
 	
-	if (res->headonly) {
-		snprintf(message, sizeof(message), "HTTP/1.0 %s\r\n", res->status);
+
+	if (req->version == 1.0) {
+		if (res->dirindex == 0 && strcmp(res->status, "200 OK\r\n") == 0) {
+			char curtime[32];
+			char mtime[32];
+			struct tm *curtm;
+			struct tm *mtm;
+			time_t now;
+			
+			now = time(0);
+			curtm = localtime(&now);
+			strftime(curtime, sizeof(curtime), "%a, %d %b %Y %T GMT", curtm);
+
+			mtm = localtime(&(res->lastmtime));
+			strftime(mtime, sizeof(curtime), "%a, %d %b %Y %T GMT", mtm);
+
+			snprintf(message, sizeof(message), "HTTP/1.0 %s\r\nDate: %s\r\nServer: SAS(Super Awesome Server)\r\nLast-Modified: %s\r\nContent-Type: %s\r\nContent-Length: %lld\r\n\r\n", res->status, curtime, mtime, res->contenttype, res->contentlength);
+
+		} else {
+			snprintf(message, sizeof(message), "HTTP/1.0 %s\r\n", res->status);
+		}
+
 		if (write(socket, message, strlen(message)) != (signed int)strlen(message)) {
 			// log error
 			return -1;
 		}
-		return 0;
 	}
-
-	if (req->version == 1.0 && res->dirindex != 1) {
-		char curtime[32];
-		char mtime[32];
-		struct tm *curtm;
-		struct tm *mtm;
-		time_t now;
 		
-		now = time(0);
-		curtm = localtime(&now);
-		strftime(curtime, sizeof(curtime), "%a, %d %b %Y %T GMT", curtm);
-
-		mtm = localtime(&(res->lastmtime));
-		strftime(mtime, sizeof(curtime), "%a, %d %b %Y %T GMT", mtm);
-
-		snprintf(message, sizeof(message), "HTTP/1.0 %s\r\nDate: %s\r\nServer: SAS(Super Awesome Server)\r\nLast-Modified: %s\r\nContent-Type: %s\r\nContent-Length: %lld\r\n\r\n", res->status, curtime, mtime, res->contenttype, res->contentlength);
-
-		if (write(socket, message, strlen(message)) != (signed int)strlen(message)) {
-			// log error
-			return -1;
-		}
-	}
 
 	if (res->dirindex == 1) {
 		FTSENT *ent;
@@ -209,20 +204,23 @@ reply(int socket, Request *req, Response *res) {
 		return 0;
 	}
 
-	if ((fd = open(req->uri, O_RDONLY)) == -1) {
-		// log error
-		return -1;
-	}
-
-	while ((readsize = read(fd, buf, sizeof(buf))) > 0) {
-		if ((writesize = write(socket, buf, readsize)) != readsize) {
+	if (req->method == GET) {
+		if ((fd = open(req->uri, O_RDONLY)) == -1) {
 			// log error
-			(void)close(fd);
 			return -1;
 		}
+
+		while ((readsize = read(fd, buf, sizeof(buf))) > 0) {
+			if ((writesize = write(socket, buf, readsize)) != readsize) {
+				// log error
+				(void)close(fd);
+				return -1;
+			}
+		}
+
+		(void)close(fd);
 	}
 
-	(void)close(fd);
 	return 0;
 }
 
@@ -238,6 +236,11 @@ runcgi(int socket, char *uri, char *dir) {
 		// log error
 		return -1;
 	} else if (pid == 0) {
+	//	if (setenv("PATH", dir, 1) != 0) {
+	//		// log error
+	//		return -1;
+	//	}
+
 		if (uri != NULL && strlen(uri) > 0) {	
 			char *var;
 			while ((var = strsep(&uri, "&")) != NULL) {
@@ -259,11 +262,13 @@ runcgi(int socket, char *uri, char *dir) {
 		}
 
 		char command[MAXPATHLEN];
-		snprintf(command, MAXPATHLEN, "./%s", fullpath);
+		snprintf(command, MAXPATHLEN, "%s", fullpath);
 		execl("/bin/sh", "sh", "-c", command, (char*) 0); 		
+//		execl(path, (char*) 0);
 	}
 
 	(void)wait(NULL);
+	return 0;
 }
 
 int
@@ -272,9 +277,11 @@ main(int argc, char **argv) {
 	Request *req = (Request *)malloc(sizeof(Request));
 	req->errcode = 0;
 	char *rootdir = "/home/mingyao/sws";
+	char *cgidir = "/home/mingyao/mid-term";
+	char *cgiuri = "/mxiong3/ls";
 	int fd;
 
-	if (parse("GET /main HTTP/1.0\r\nIf-Modified-Since: Fri, 04 Dec 2010 18:40:37 GMT\r\n", req) == -1) {
+	if (parse("GET /main/haha HTTP/1.0\r\nIf-Modified-Since: Fri, 04 Dec 2010 18:40:37 GMT\r\n", req) == -1) {
 		printf("parse failed\n");
 		return 0;
 	}
@@ -318,10 +325,17 @@ main(int argc, char **argv) {
 	printf("================ end of response info ==============\n");
 	
 	fd = open("socket", O_WRONLY|O_CREAT|O_TRUNC, 0777);
-	if (reply(fd, req, res) == 0) {
-		printf("reply successfully!!\n");
+
+//	if (reply(fd, req, res) == 0) {
+//		printf("reply successfully!!\n");
+//	} else {
+//		printf("reply failed\n");
+//	}
+
+	if (runcgi(fd, cgiuri, cgidir) == 0) {
+		printf("cgi run succeed\n");
 	} else {
-		printf("reply failed\n");
+		printf("cgi failed\n");
 	}
 
 	exit(EXIT_SUCCESS);
