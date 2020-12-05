@@ -1,6 +1,6 @@
 #include "sws.h"
 
-int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd, port = 8080, ipv = 6;      
+int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd, port = 8080, ipv = 6, rootfd;      
 char *dir, *cgiDir, *addr, *file, *ipAddr;
 
 
@@ -13,7 +13,7 @@ testDir(char *dir)
                 closedir(dirTest);
                 return EXIT_SUCCESS;
         } else {
-                fprintf(stderr, "%invalid directory '%s'\n", dir);
+                fprintf(stderr, "invalid directory '%s'\n", dir);
                 return EXIT_FAILURE;
         }
 }

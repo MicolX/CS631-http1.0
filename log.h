@@ -16,13 +16,13 @@
 
 typedef struct log_t {
         char *remoteIp;
-        struct tm *time;
+        char *time;
         char *firstLine;
         const char *status;
         int contentLength;
 } Log;
 
 void
-writeLog(char *str);
+writeLog(Log *log);
 
 #endif

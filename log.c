@@ -3,13 +3,13 @@
 void
 writeLog(Log *log)
 {
-	char *msg = malloc(strlen(log->remoteIp) + sizeof log->time + strlen(log->firstLine) + sizeof status + sizeof size);
+	char *msg = malloc(strlen(log->remoteIp) + sizeof log->time + strlen(log->firstLine) + strlen(log->status) + sizeof log->contentLength);
 	if (msg == NULL) {
                 perror("logging message malloc");
                 exit(EXIT_FAILURE);
 	}
 
-        if (snprintf(msg, strlen(msg), "%s %Y-%m-%d %H:%M:%S '%s' %s %d\n", log->remoteIp, log->time, log->firstLine, log->status, log->contentLength) < 0) {
+        if (snprintf(msg, strlen(msg), "%s %s '%s' %s %d\n", log->remoteIp, log->time, log->firstLine, log->status, log->contentLength) < 0) {
                 perror("formatting log message");
                 exit(EXIT_FAILURE);
         }
