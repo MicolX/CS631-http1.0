@@ -19,7 +19,7 @@ writeLog(Log *log)
                 return -1;
 	}
 
-        if (snprintf(msg, strlen(msg), "%s %s '%s' %s %d\n", log->remoteIp, log->time, log->firstLine, log->status, log->contentLength) < 0) {
+        if (snprintf(msg, strlen(msg), "%s %s '%s' %s %d\n", log->remoteIp, timeBuf, log->firstLine, log->status, log->contentLength) < 0) {
                 syslog(0, "Error formatting log string: %m");
                 return -1;
         }

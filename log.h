@@ -17,7 +17,7 @@
 #define TIME_STR_MAX 20 /* Max size of time string as dictated by provided format */
 
 typedef struct log_t {
-        char *remoteIp;
+        const char *remoteIp;
         struct tm *time;
         char *firstLine;
         const char *status;
