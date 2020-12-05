@@ -16,7 +16,7 @@ int
 open4Socket() {
         int sock, type;
         socklen_t socklen;
-
+        //sockaddr_storage
         struct sockaddr_in sockaddr;
         struct in_addr addr;
         type = PF_INET;
@@ -30,7 +30,7 @@ open4Socket() {
                 }
                 sockaddr.sin_addr = addr;
         } else {
-		if (inet_aton("::fff:0.0.0.0", &addr)) {
+		if (inet_aton("::ffff:0.0.0.0", &addr)) {
 			perror("setting catch-all IPv4 socket address");
 			exit(EXIT_FAILURE);
 		}
@@ -203,7 +203,6 @@ handle6Socket(int s) {
                         char str[100];  /* Temporary for testing purposes */
                         snprintf(str, sizeof str, "\n##%s", connectionIP);
                         writeLog(str);
-
                         writeLog(" DISCONNECTED\n");
 
                 } else {
@@ -226,7 +225,7 @@ handle6Socket(int s) {
                                         if (reply(socketFd, rootfd, req, res) < 0) {
                                                 printf("reply failed\n");
                                         } else {
-                                                printf("replay successfull!\n");
+                                                printf("replay successful!\n");
                                         }
                                 }
                         }
