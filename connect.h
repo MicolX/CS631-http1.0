@@ -25,6 +25,9 @@
 #define DEBUG_BACKLOG 10
 #define SLEEP 5
 
+extern int domain;
+
+
 int
 verifyIp(const char *str);
 
@@ -41,7 +44,7 @@ void
 handleSocket(int socket);
 
 void
-connect();
+startServer();
 
 //void
 //handle4Socket(int s);

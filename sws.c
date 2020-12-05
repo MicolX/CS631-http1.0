@@ -8,7 +8,7 @@ int
 testDir(char *dir)
 {
         DIR *dirTest;
-        dirTest = opendir(cgiDir);
+        dirTest = opendir(dir);
         if (dirTest) {
                 closedir(dirTest);
                 return EXIT_SUCCESS;
@@ -107,7 +107,7 @@ main(int argc, char **argv)
                 exit(EXIT_FAILURE);
         }
 
-        openlog(argv[0], LOG_PID, NULL);       /* Opens system logging to track server errors */
+        openlog(argv[0], LOG_PID, 0);       /* Opens system logging to track server errors */
 
         if (d_opt == 0) {
                 if (daemon(0, 1) == -1) {
@@ -116,7 +116,7 @@ main(int argc, char **argv)
                 }
         }
 
-        connect();
+        startServer();
 }
 
 

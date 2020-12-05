@@ -1,5 +1,7 @@
 #include "connect.h"
 
+int domain;
+
 int
 verifyIp(const char *str)
 {
@@ -15,7 +17,7 @@ verifyIp(const char *str)
 int
 openSocket()
 {
-        int domain, sock, num;
+        int sock, num;
         void *s;
         socklen_t length, s_size;
         struct sockaddr_storage server;
@@ -29,7 +31,7 @@ openSocket()
         }
 
         if ((sock = socket(domain, SOCK_STREAM, 0)) < 0) {
-                syslog(NULL, "Error creating IPv%d socket: %m", ipv);
+                syslog(0, "Error creating IPv%d socket: %m", ipv);
                 exit(EXIT_FAILURE);
         }
 
@@ -50,24 +52,24 @@ openSocket()
 
                 /* Neither v4 nor v6 was explicitly
                  * requested, so we do both. */
-                if (argc == 1) {
+                if (i_opt == 1) {
                         int off = 0;
                         if (setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (void *) &off, sizeof(off)) < 0) {
-                                syslog(NULL, "Error setting socket option for both IPv values: %m");
+                                syslog(0, "Error setting socket option for both IPv values: %m");
                                 exit(EXIT_FAILURE);
                         }
                 }
         }
 
         if (bind(sock, (struct sockaddr *) s, s_size) != 0) {
-                syslog(NULL, "Error binding socket: %m");
+                syslog(0, "Error binding socket: %m");
                 exit(EXIT_FAILURE);
         }
 
         /* Find out assigned port number and print it out */
         length = sizeof(server);
         if (getsockname(sock, (struct sockaddr *) &server, &length) != 0) {
-                syslog(NULL, "Error getting socket name: %m", ipv);
+                syslog(0, "Error getting socket name: %m");
                 exit(EXIT_FAILURE);
         }
 
@@ -78,10 +80,10 @@ openSocket()
                 struct sockaddr_in6 *s = (struct sockaddr_in6 *) &server;
                 num = ntohs(s->sin6_port);
         }
-        printf("Socket started on Port $#d", num);
+        printf("Socket started on Port #%d", num);
 
         if (listen(sock, DEBUG_BACKLOG) < 0) {
-                syslog(NULL, "Error listening on socket: %m");
+                syslog(0, "Error listening on socket: %m");
                 exit(EXIT_FAILURE);
         }
 
@@ -92,14 +94,13 @@ openSocket()
 void
 handleSocket(int sock)
 {
-        int sockFd, reader;
+        int sockFd, rval;
         struct sockaddr_in6 client;
         socklen_t size;
 
         size = sizeof(client);
         if ((sockFd = accept(sock, (struct sockaddr *)&client, &size)) < 0) {
-                syslog(NULL, "Error accepting connection on socket: %m");
-                continue;
+                syslog(0, "Error accepting connection on socket: %m");
         }
 
         do {
@@ -111,8 +112,8 @@ handleSocket(int sock)
                 int port;
 
                 bzero(buf, sizeof(buf));
-                if ((rval = read(fd, buf, BUFSIZ)) < 0) {
-                        syslog(NULL, "Error reading socket: %m");
+                if ((rval = read(sockFd, buf, BUFSIZ)) < 0) {
+                        syslog(0, "Error reading socket: %m");
                         break;
                 }
 
@@ -122,7 +123,7 @@ handleSocket(int sock)
 
                 len = sizeof(addr);
                 if (getpeername(sockFd, (struct sockaddr *)&addr, &len) < 0) {
-                        syslog(NULL, "Error getting peer name: %m");
+                        syslog(0, "Error getting peer name: %m");
                         break;
                 }
 
@@ -137,7 +138,7 @@ handleSocket(int sock)
                 }
 
                 if (rip == NULL) {
-                        syslog(NULL, "inet_ntop error: %m");
+                        syslog(0, "inet_ntop error: %m");
                         rip = "unknown";
                 }
                 printf("Client (%s:%d) sent: \"%s\"", rip, port, buf);
@@ -369,7 +370,7 @@ handleSocket(int sock)
 //}
 //
 void
-connect()
+startServer()
 {
         int socket;
 
@@ -388,7 +389,7 @@ connect()
                         to.tv_sec = SLEEP;
                         to.tv_usec = 0;
                         if (select(socket + 1, &ready, 0, 0, &to) < 0) {
-                                syslog(NULL, "Error selecting socket: %m");
+                                syslog(0, "Error selecting socket: %m");
                                 continue;
                         }
                         if (FD_ISSET(socket, &ready)) {
