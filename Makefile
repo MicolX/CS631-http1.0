@@ -1,7 +1,7 @@
 CC=	cc
 CFLAGS=	-g -Wall -Wextra -Werror 
 EXE=	sws
-OBJS=	connect.o log.o parser.o process.o response.o sws.o
+OBJS=	connect.o log.o parser.o response.o sws.o
 
 all: ${EXE}
 
