@@ -183,7 +183,7 @@ reply(int socket, Request *req, Response *res) {
 		
 		ftsp = fts_open(dir, FTS_PHYSICAL, compar);
 		errno = 0;
-		while (ent = fts_read(ftsp)) {
+		while ((ent = fts_read(ftsp))) {
 			if (errno) {
 				// log error
 				(void)fts_close(ftsp);
@@ -193,7 +193,7 @@ reply(int socket, Request *req, Response *res) {
 				char fname[strlen(ent->fts_name)+2];
 				(void)snprintf(fname, sizeof(fname), "%s\n", ent->fts_name);
 
-				if (write(socket, fname, strlen(fname)) != strlen(fname)) {
+				if (write(socket, fname, strlen(fname)) != (int) strlen(fname)) {
 					// log error
 					(void)fts_close(ftsp);
 					return -1;
@@ -299,7 +299,7 @@ userdirhandler(char *uri, char newuri[]) {
 		
 
 int
-main(int argc, char **argv) {
+main(){
 	Response *res = (Response *)malloc(sizeof(Response));
 	Request *req = (Request *)malloc(sizeof(Request));
 	req->errcode = 0;
