@@ -6,11 +6,21 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <libgen.h>
+#include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "connect.h"
 #include "sws.h"
+
+typedef struct log_t {
+        char *remoteIp;
+        struct tm *time;
+        char *firstLine;
+        const char *status;
+        int contentLength;
+} Log;
 
 void
 writeLog(char *str);
