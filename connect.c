@@ -100,15 +100,15 @@ handleSocket(int sock)
         Log *log = (Log *) malloc(sizeof(Log));
 
         if (request == NULL) {
-                syslog(NULL, "Error allocating memory to request structure: %m");
+                syslog(0, "Error allocating memory to request structure: %m");
                 exit(EXIT_FAILURE);
         }
         if (response == NULL) {
-                syslog(NULL, "Error allocating memory to response structure: %m");
+                syslog(0, "Error allocating memory to response structure: %m");
                 exit(EXIT_FAILURE);
         }
         if (log == NULL) {
-                syslog(NULL, "Error allocating memory to log structure : %m");
+                syslog(0, "Error allocating memory to log structure : %m");
                 exit(EXIT_FAILURE);
         }
 
@@ -125,24 +125,23 @@ handleSocket(int sock)
         struct sockaddr_storage addr;
         socklen_t len;
         const char *rip;
-        int port;
         time_t timer;
-        struct tm *gmtime;
+        struct tm *gtime;
 
         bzero(buf, sizeof(buf));
         if ((rval = read(sockFd, buf, BUFSIZ)) < 0) {
                 syslog(0, "Error reading socket: %m");
-                break;
+               	return; 
         }
 
         if (rval == 0) {
-                break;
+               	return; 
         }
 
         len = sizeof(addr);
         if (getpeername(sockFd, (struct sockaddr *) &addr, &len) < 0) {
                 syslog(0, "Error getting peer name: %m");
-                break;
+               	return; 
         }
 
         if (domain == PF_INET) {
@@ -163,31 +162,31 @@ handleSocket(int sock)
         if (parse(buf, request) == -1) {
                 if (write(sockFd, INVALID_REQUEST, sizeof(INVALID_REQUEST)) < 0) {
                         syslog(0, "Error sending invalid request error message: %m");
-                        break;
+                       	return; 
                 }
         } else {
                 if (respond(buf, request, response) == -1) {
                         syslog(0, "Error composing response : %m");
-                        break;
+                       	return; 
                 }
 
                 if (reply(sockFd, request, response) == -1) {
                         syslog(0, "Error sending response: %m");
-                        break;
+                       	return; 
                 }
 
                 if (time(&timer) == -1) {
                         syslog(0, "Error getting current time: %m");
-                        break;
+                       	return; 
                 }
 
-                if ((gmtime = gmtime(&timer)) == NULL) {
+                if ((gtime = gmtime(&timer)) == NULL) {
                         syslog(0, "Error converting current time to GMT time: %m");
-                        break;
+                       	return; 
                 }
 
                 log->remoteIp = rip;
-                log->time = gmtime;
+                log->time = gtime;
                 log->firstLine = strtok(buf, "\n");
                 /* According to manual above has no errors; NULL case is invalid and won't make it this far */
                 log->status = response->status;
@@ -195,7 +194,7 @@ handleSocket(int sock)
 
                 if (writeLog(log) == -1) {
                         syslog(0, "Error converting current time to GMT time: %m");
-                        exit(EXIT_FAILURE);
+                       	return; 
                 }
 
         }
