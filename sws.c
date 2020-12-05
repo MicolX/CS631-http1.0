@@ -107,17 +107,16 @@ main(int argc, char **argv)
                 exit(EXIT_FAILURE);
         }
 
-        if (d_opt == 1) {
-		debugSocket();
-        } else {
+        openlog(argv[0], LOG_PID, NULL);       /* Opens system logging to track server errors */
+
+        if (d_opt == 0) {
                 if (daemon(0, 1) == -1) {
                         perror("daemon");
                         exit(EXIT_FAILURE);
                 }
-                for (;;) {
-                        selectSocket();
-                }
         }
+
+        connect();
 }
 
 

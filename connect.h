@@ -29,21 +29,30 @@ int
 verifyIp(const char *str);
 
 int
-open4Socket();
+openSocket();
 
-int
-open6Socket();
-
-void
-handle4Socket(int s);
-
-void
-handle6Socket(int s);
+//int
+//open4Socket();
+//
+//int
+//open6Socket();
 
 void
-selectSocket();
+handleSocket(int socket);
 
 void
-debugSocket();
+connect();
+
+//void
+//handle4Socket(int s);
+//
+//void
+//handle6Socket(int s);
+
+//void
+//selectSocket();
+//
+//void
+//debugSocket();
 
 #endif
