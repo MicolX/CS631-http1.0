@@ -5,9 +5,22 @@ char *dir, *cgiDir, *addr, *file, *ipAddr;
 
 
 int
-main(int argc, char **argv)
+testDir(char *dir)
 {
         DIR *dirTest;
+        dirTest = opendir(cgiDir);
+        if (dirTest) {
+                closedir(dirTest);
+                return EXIT_SUCCESS;
+        } else {
+                fprintf(stderr, "%invalid directory '%s'\n", dir);
+                return EXIT_FAILURE;
+        }
+}
+
+int
+main(int argc, char **argv)
+{
         char *temp = NULL;
 	char opt;
 
@@ -16,14 +29,10 @@ main(int argc, char **argv)
                         switch (opt) {
                                 case 'c':
                                         cgiDir = optarg;
-                                        dirTest = opendir(cgiDir);
-                                        if (dirTest) {
-                                                closedir(dirTest);
-						dirTest = NULL;
-                                        } else {
-                                                fprintf(stderr, "%s: invalid directory '%s'\n", argv[0], cgiDir);
-                                                exit(EXIT_FAILURE);
-                                        }
+
+
+                                        testDir(cgiDir);  //TODO: move this to the CGI code base
+
                                         c_opt = 1;
                                         break;
 
@@ -78,15 +87,6 @@ main(int argc, char **argv)
 			if (dir == NULL) {	/* Assume this current directory */
 				dir = ".";
 			}
-
-			/* Check if dir is valid */
-                	dirTest = opendir(dir);
-                	if (dirTest) {
-                  		closedir(dirTest);
-                	} else {
-                 	 	fprintf(stderr, "%s: invalid directory '%s'\n", argv[0], dir);
-                    		exit(EXIT_FAILURE);
-                	}
 			optind++;
        		}
 	}
@@ -98,14 +98,26 @@ main(int argc, char **argv)
 		}
 	}
 
+        if (testDir(dir) != EXIT_SUCCESS) { /* Checking dir right before the networking code starts (moved from in opt loop) */
+                exit(EXIT_FAILURE);
+        }
+
+        if (chdir(dir) != 0) {
+                perror("chdir");
+                exit(EXIT_FAILURE);
+        }
+
         if (d_opt == 1) {
 		debugSocket();
         } else {
-                daemonize();
+                if (daemon(0, 1) == -1) {
+                        perror("daemon");
+                        exit(EXIT_FAILURE);
+                }
+                for (;;) {
+                        selectSocket();
+                }
         }
-	
-	//printf("Server started on Port #%d\n", ntohs(port));
-
 }
 
 
