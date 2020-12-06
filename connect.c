@@ -90,8 +90,7 @@ openSocket() {
 
 
 void
-handleSocket(int sock)
-{
+handleSocket(int sock) {
         int sockFd, rval;
         struct sockaddr_in6 client;
         socklen_t size;
@@ -131,17 +130,17 @@ handleSocket(int sock)
         bzero(buf, sizeof(buf));
         if ((rval = read(sockFd, buf, BUFSIZ)) < 0) {
                 syslog(0, "Error reading socket: %m");
-               	return; 
+                return;
         }
 
         if (rval == 0) {
-               	return; 
+                return;
         }
 
         len = sizeof(addr);
         if (getpeername(sockFd, (struct sockaddr *) &addr, &len) < 0) {
                 syslog(0, "Error getting peer name: %m");
-               	return; 
+                return;
         }
 
         if (domain == PF_INET) {
@@ -159,45 +158,39 @@ handleSocket(int sock)
                 rip = "unknown";
         }
 
-        if (parse(buf, request) == -1) {
-                if (write(sockFd, INVALID_REQUEST, sizeof(INVALID_REQUEST)) < 0) {
-                        syslog(0, "Error sending invalid request error message: %m");
-                       	return; 
-                }
-        } else {
-                if (respond(buf, request, response) == -1) {
-                        syslog(0, "Error composing response : %m");
-                       	return; 
-                }
 
-                if (reply(sockFd, request, response) == -1) {
-                        syslog(0, "Error sending response: %m");
-                       	return; 
-                }
-
-                if (time(&timer) == -1) {
-                        syslog(0, "Error getting current time: %m");
-                       	return; 
-                }
-
-                if ((gtime = gmtime(&timer)) == NULL) {
-                        syslog(0, "Error converting current time to GMT time: %m");
-                       	return; 
-                }
-
-                log->remoteIp = rip;
-                log->time = gtime;
-                log->firstLine = strtok(buf, "\n");
-                /* According to manual above has no errors; NULL case is invalid and won't make it this far */
-                log->status = response->status;
-                log->contentLength = response->contentlength;
-
-                if (writeLog(log) == -1) {
-                        syslog(0, "Error converting current time to GMT time: %m");
-                       	return; 
-                }
-
+        if (respond(buf, request, response) == -1) {
+                syslog(0, "Error composing response : %m");
+                return;
         }
+
+        if (reply(sockFd, request, response) == -1) {
+                syslog(0, "Error sending response: %m");
+                return;
+        }
+
+        if (time(&timer) == -1) {
+                syslog(0, "Error getting current time: %m");
+                return;
+        }
+
+        if ((gtime = gmtime(&timer)) == NULL) {
+                syslog(0, "Error converting current time to GMT time: %m");
+                return;
+        }
+
+        log->remoteIp = rip;
+        log->time = gtime;
+        log->firstLine = strtok(buf, "\n");
+        /* According to manual above has no errors; NULL case is invalid and won't make it this far */
+        log->status = response->status;
+        log->contentLength = response->contentlength;
+
+        if (writeLog(log) == -1) {
+                syslog(0, "Error converting current time to GMT time: %m");
+                return;
+        }
+
 
         free(request);
         free(log);
