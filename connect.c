@@ -158,8 +158,16 @@ handleSocket(int sock) {
                 rip = "unknown";
         }
 
+	if (parse(buf, request) == -1) {
+		syslog(0, "Error parsing response: %m");
+		return;
+	}
 
-        if (respond(buf, request, response) == -1) {
+	printf("URI: %s\n", request->uri);
+	printf("DIR: %s\n", dir);
+
+
+        if (respond(dir, request, response) == -1) {
                 syslog(0, "Error composing response : %m");
                 return;
         }

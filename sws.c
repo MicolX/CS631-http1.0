@@ -114,6 +114,8 @@ main(int argc, char **argv)
                         perror("daemon");
                         exit(EXIT_FAILURE);
                 }
+
+		printf("Directory: %s\n", dir);
         }
 
         startServer();
