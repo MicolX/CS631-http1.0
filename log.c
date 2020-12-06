@@ -31,5 +31,5 @@ writeLog(Log *log)
         }
 
         free(msg);
-        return 1;
+        return 0;
 }
