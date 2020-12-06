@@ -298,81 +298,81 @@ userdirhandler(char *uri, char newuri[]) {
 }
 		
 
-int
-main(){
-	Response *res = (Response *)malloc(sizeof(Response));
-	Request *req = (Request *)malloc(sizeof(Request));
-	req->errcode = 0;
-	char *rootdir = "/home/mingyao/sws";
-	char *cgidir = "/home/mingyao/mid-term";
-	char *cgiuri = strdup("/mxiong3/ls");
-	int fd;
-
-	if (parse("GET /main HTTP/1.0\r\nIf-Modified-Since: Fri, 04 Dec 2010 18:40:37 GMT\r\n", req) == -1) {
-		printf("parse failed\n");
-		return 0;
-	}
-
-	printf("========== request info ===========\n");
-	if (req->method == GET) {
-		printf("method = GET\n");
-	} else if (req->method == HEAD) {
-		printf("method = HEAD\n");
-	} else {
-		printf("method = UNSUPPORTED\n");
-	}
-	printf("uri = %s\n", req->uri);
-	printf("version = %f\n", req->version);
-	printf("if-modified-since = %s\n", req->ifms);
-	printf("errcode = %d\n", req->errcode);
-	printf("============= end of request info ============\n");
-
-//	if (chroot(rootdir) < 0) {
-//		printf("chroot failed, error: %s\n", strerror(errno));
-//		exit(EXIT_FAILURE);
+//int
+//main(){
+//	Response *res = (Response *)malloc(sizeof(Response));
+//	Request *req = (Request *)malloc(sizeof(Request));
+//	req->errcode = 0;
+//	char *rootdir = "/home/mingyao/sws";
+//	char *cgidir = "/home/mingyao/mid-term";
+//	char *cgiuri = strdup("/mxiong3/ls");
+//	int fd;
+//
+//	if (parse("GET /main HTTP/1.0\r\nIf-Modified-Since: Fri, 04 Dec 2010 18:40:37 GMT\r\n", req) == -1) {
+//		printf("parse failed\n");
+//		return 0;
 //	}
-
-//	if ((rootfd = open(rootdir, O_RDONLY|O_DIRECTORY)) == -1) {
-//		printf("open root dir failed, error: %s\n", strerror(errno));
-//		exit(EXIT_FAILURE);
-//	}
-
-	if (respond(rootdir, req, res) == -1) {
-		printf("compose respond failed\n");
-		exit(EXIT_FAILURE);
-	}
-
-	printf("================ response info ==============\n");
-	printf("status = %s\n", res->status);
-	printf("last mtime = %s\n", ctime(&(res->lastmtime)));
-	printf("content type = %s\n", res->contenttype);
-	printf("content length = %lld\n", res->contentlength);
-	printf("head only = %d\n", res->headonly);
-	printf("dir index = %d\n", res->dirindex);
-	printf("================ end of response info ==============\n");
-	
-	fd = open("socket", O_WRONLY|O_CREAT|O_TRUNC, 0777);
-
-//	if (reply(fd, req, res) == 0) {
-//		printf("reply successfully!!\n");
+//
+//	printf("========== request info ===========\n");
+//	if (req->method == GET) {
+//		printf("method = GET\n");
+//	} else if (req->method == HEAD) {
+//		printf("method = HEAD\n");
 //	} else {
-//		printf("reply failed\n");
+//		printf("method = UNSUPPORTED\n");
 //	}
-
-	if (runcgi(fd, cgiuri, cgidir) == 0) {
-		printf("cgi run succeed\n");
-	} else {
-		printf("cgi failed\n");
-	}
-
-	char *uri = strdup("~mingyao/main/index.html");
-	char new[MAXPATHLEN];
-	if (userdirhandler(uri, new) == -1) {
-		printf("handle failed\n");
-	} else {
-		printf("%s\n", new);
-	}
-
-	exit(EXIT_SUCCESS);
-}
+//	printf("uri = %s\n", req->uri);
+//	printf("version = %f\n", req->version);
+//	printf("if-modified-since = %s\n", req->ifms);
+//	printf("errcode = %d\n", req->errcode);
+//	printf("============= end of request info ============\n");
+//
+////	if (chroot(rootdir) < 0) {
+////		printf("chroot failed, error: %s\n", strerror(errno));
+////		exit(EXIT_FAILURE);
+////	}
+//
+////	if ((rootfd = open(rootdir, O_RDONLY|O_DIRECTORY)) == -1) {
+////		printf("open root dir failed, error: %s\n", strerror(errno));
+////		exit(EXIT_FAILURE);
+////	}
+//
+//	if (respond(rootdir, req, res) == -1) {
+//		printf("compose respond failed\n");
+//		exit(EXIT_FAILURE);
+//	}
+//
+//	printf("================ response info ==============\n");
+//	printf("status = %s\n", res->status);
+//	printf("last mtime = %s\n", ctime(&(res->lastmtime)));
+//	printf("content type = %s\n", res->contenttype);
+//	printf("content length = %lld\n", res->contentlength);
+//	printf("head only = %d\n", res->headonly);
+//	printf("dir index = %d\n", res->dirindex);
+//	printf("================ end of response info ==============\n");
+//
+//	fd = open("socket", O_WRONLY|O_CREAT|O_TRUNC, 0777);
+//
+////	if (reply(fd, req, res) == 0) {
+////		printf("reply successfully!!\n");
+////	} else {
+////		printf("reply failed\n");
+////	}
+//
+//	if (runcgi(fd, cgiuri, cgidir) == 0) {
+//		printf("cgi run succeed\n");
+//	} else {
+//		printf("cgi failed\n");
+//	}
+//
+//	char *uri = strdup("~mingyao/main/index.html");
+//	char new[MAXPATHLEN];
+//	if (userdirhandler(uri, new) == -1) {
+//		printf("handle failed\n");
+//	} else {
+//		printf("%s\n", new);
+//	}
+//
+//	exit(EXIT_SUCCESS);
+//}
 
