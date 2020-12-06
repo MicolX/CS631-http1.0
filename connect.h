@@ -24,7 +24,7 @@
 
 #define DEBUG_BACKLOG 10
 #define SLEEP 5
-#define INVALID_REQUEST "ERROR: Invalid request"
+#define INVALID_REQUEST "ERROR: Invalid request\n"
 
 extern int domain;
 
