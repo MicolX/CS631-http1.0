@@ -19,12 +19,12 @@
 #define RESPONSE_H
 
 typedef struct response_t {
-	const char *status;
-	time_t lastmtime;
-	const char *contenttype;
-	long long contentlength;
-	int headonly;
-	int dirindex;
+        const char *status;
+        time_t lastmtime;
+        const char *contenttype;
+        long long contentlength;
+        int headonly;
+        int dirindex;
 } Response;
 
 #endif

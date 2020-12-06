@@ -11,17 +11,17 @@
 #define MAX_TIME  30
 
 typedef enum Method {
-	GET,
-	HEAD,
-	UNSUPPORTED
+        GET,
+        HEAD,
+        UNSUPPORTED
 } Method;
 
 typedef struct request_t {
-	enum Method method;
-	char uri[MAX_PATH];
-	float version;
-	char ifms[MAX_TIME];
-	int errcode;
+        enum Method method;
+        char uri[MAX_PATH];
+        float version;
+        char ifms[MAX_TIME];
+        int errcode;
 } Request;
 
 int parse(char *, Request *);
