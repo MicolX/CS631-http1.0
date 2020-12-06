@@ -39,14 +39,14 @@ openSocket()
                 struct sockaddr_in *sin = (struct sockaddr_in *) &server;
                 sin->sin_family = PF_INET;
                 sin->sin_addr.s_addr = INADDR_ANY;
-                sin->sin_port = 0;
+                sin->sin_port = port;
                 s = sin;
                 s_size = sizeof(*sin);
         } else {
                 struct sockaddr_in6 *sin = (struct sockaddr_in6 *) &server;
                 sin->sin6_family = PF_INET6;
                 sin->sin6_addr = in6addr_any;
-                sin->sin6_port = 0;
+                sin->sin6_port = port;
                 s = sin;
                 s_size = sizeof(*sin);
 
@@ -97,10 +97,20 @@ handleSocket(int sock)
         int sockFd, rval;
         struct sockaddr_in6 client;
         socklen_t size;
+        Request *request = (Request *)malloc(sizeof(Request));
+        Log *log = (Log *)malloc(sizeof(Log));
+
+        if (request == NULL) {
+                syslog(NULL, "Error allocating memory to request structure: %m");
+        }
+        if (log == NULL) {
+                syslog(NULL, "Error allocating memory to log structure : %m");
+        }
 
         size = sizeof(client);
         if ((sockFd = accept(sock, (struct sockaddr *)&client, &size)) < 0) {
                 syslog(0, "Error accepting connection on socket: %m");
+                exit(EXIT_FAILURE);
         }
 
         do {
@@ -141,9 +151,22 @@ handleSocket(int sock)
                         syslog(0, "inet_ntop error: %m");
                         rip = "unknown";
                 }
-                printf("Client (%s:%d) sent: \"%s\"", rip, port, buf);
+//                printf("Client (%s:%d) sent: \"%s\"", rip, port, buf);
+
+                if (parse(buf, request) == -1) {
+                        if (write(sockFd, INVALID_REQUEST, sizeof(INVALID_REQUEST)) < 0) {
+                                syslog(0, "Error sending invalid request error message: %m");
+                        }
+                } else {
+
+                }
+
+
+
         } while (rval != 0);
 
+        free(request);
+        free(log);
         close(sockFd);
 }
 
