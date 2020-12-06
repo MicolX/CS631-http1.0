@@ -4,10 +4,13 @@
 #define HEADERSIZE 1
 #define VERSION10 "HTTP/1.0"
 #define VERSION09 "HTTP/0.9"
+#define CGI "/cgi-bin/"
 
 const char* Headers[HEADERSIZE] = {
 	"If-Modified-Since: ",
 };
+	
+
 
 int
 getrline(char *p, const char *end, Request *req)
@@ -20,7 +23,7 @@ getrline(char *p, const char *end, Request *req)
 		req->method = HEAD;
 		p += 5;
 	} else {
-		req->method = UNSUPPORT;
+		req->method = UNSUPPORTED;
 		req->errcode = 501;
 		return -1;
 	}
@@ -128,6 +131,8 @@ parse(char *request, Request *req)
 	return 0;
 }
 
+
+
 //int
 //main(int argc, char **argv)
 //{
@@ -137,7 +142,7 @@ parse(char *request, Request *req)
 //		exit(EXIT_FAILURE);
 //	}
 //
-//	if (parse("GET ab\r\n", req) == -1) {
+//	if (parse("GET ab HTTP/1.0\r\n", req) == -1) {
 //		printf("parse fail\n");
 //	} else {
 //		if (req->method == GET) {
@@ -150,5 +155,6 @@ parse(char *request, Request *req)
 //		printf("uri = %s\n", req->uri);
 //		printf("version = %f\n", req->version);
 //		printf("if-modified-since = %s\n", req->ifms);
+//		printf("errcode = %d\n", req->errcode);
 //	}
 //}
