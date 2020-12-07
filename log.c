@@ -45,7 +45,7 @@ writeLog(const char *rip, struct tm *time, char *firstLine, const char *status, 
 //        }
 
 
-        if (write(logFd, rip, strlen(rip)) < 0) {
+        if (write(logFd, rip, sizeof rip) < 0) {
                 perror("Error writing IP to log");
                 syslog(LOG_INFO, "Error writing IP to log");
                 return -1;
@@ -63,31 +63,26 @@ writeLog(const char *rip, struct tm *time, char *firstLine, const char *status, 
                 return -1;
         }
 
-        if (write(logFd, "'", 1) < 0) {
+        if (write(logFd, " '", 2) < 0) {
                 perror("Error writing open quote to log");
                 syslog(LOG_INFO, "Error writing open quote to log");
                 return -1;
         }
 
-        if (write(logFd, firstLine, strlen(firstLine)) < 0) {
+        if (write(logFd, firstLine, strlen(firstLine) -1) < 0) {
                 perror("Error writing first line to log");
                 syslog(LOG_INFO, "Error writing first line to log");
                 return -1;
         }
 
-        if (write(logFd, "'", 1) < 0) {
+        if (write(logFd, "' ", 2) < 0) {
                 perror("Error writing close quote to log");
                 syslog(LOG_INFO, "Error writing close quote to log");
                 return -1;
         }
 
-        if (write(logFd, " ", 1) < 0) {
-                perror("Error writing space to log");
-                syslog(LOG_INFO, "Error writing space to log");
-                return -1;
-        }
 
-        if (write(logFd, status, strlen(status) - 1) < 0) {
+        if (write(logFd, status, 3) < 0) {
                 perror("Error writing status to log");
                 syslog(LOG_INFO, "Error writing status to log");
                 return -1;
