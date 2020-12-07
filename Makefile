@@ -1,7 +1,13 @@
-objects = sws.c connect.c log.c process.c parser.c
+CC=	cc
+CFLAGS=	-g -Wall -Wextra -Werror 
+EXE=	sws
+OBJS=	connect.o log.o parser.o response.o sws.o
 
-make : $(objects)
-	cc -g -Wall -Werror -Wextra -o sws $(objects)
+all: ${EXE}
 
-clean :
-	rm a.out sws.o connect.o log.o process.o parser.o
+
+$(EXE):	${OBJS} 
+	${CC} ${LDFLAGS} ${OBJS} -lmagic -o ${EXE}
+
+clean:
+	rm -f ${EXE} *.o

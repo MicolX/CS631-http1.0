@@ -1,13 +1,26 @@
 #include "sws.h"
 
-int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd, port = 8080, ipv = 6;      
-char *dir = ".", *cgiDir, *addr, *file, *ipAddr;
+int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd = STDOUT_FILENO, port = 8080, ipv = 6, rootfd;      
+char *dir, *cgiDir, *addr, *file, *ipAddr;
 
+
+int
+testDir(char *dir)
+{
+        DIR *dirTest;
+        dirTest = opendir(dir);
+        if (dirTest) {
+                closedir(dirTest);
+                return EXIT_SUCCESS;
+        } else {
+                fprintf(stderr, "invalid directory '%s'\n", dir);
+                return EXIT_FAILURE;
+        }
+}
 
 int
 main(int argc, char **argv)
 {
-        DIR *dirTest;
         char *temp = NULL;
 	char opt;
 
@@ -16,14 +29,10 @@ main(int argc, char **argv)
                         switch (opt) {
                                 case 'c':
                                         cgiDir = optarg;
-                                        dirTest = opendir(cgiDir);
-                                        if (dirTest) {
-                                                closedir(dirTest);
-						dirTest = NULL;
-                                        } else {
-                                                fprintf(stderr, "%s: invalid directory '%s'\n", argv[0], cgiDir);
-                                                exit(EXIT_FAILURE);
-                                        }
+
+
+                                        testDir(cgiDir);  //TODO: move this to the CGI code base
+
                                         c_opt = 1;
                                         break;
 
@@ -74,21 +83,12 @@ main(int argc, char **argv)
                         }
                 } else {
                 	dir = argv[optind];
-			
-			if (dir == NULL) {	/* Assume this current directory */
-				dir = ".";	
-			}	
 
-			/* Check if dir is valid */
-                	dirTest = opendir(dir);
-                	if (dirTest) {
-                  		closedir(dirTest);
-                	} else {
-                 	 	fprintf(stderr, "%s: invalid directory '%s'\n", argv[0], dir);
-                    		exit(EXIT_FAILURE);
-                	}
+			if (dir == NULL) {	/* Assume this current directory */
+				dir = ".";
+			}
 			optind++;
-       		} 
+       		}
 	}
 
 	if ((d_opt == 0) && (l_opt == 0)) {	/* No logging, redirect logFd to /dev/null */
@@ -98,14 +98,27 @@ main(int argc, char **argv)
 		}
 	}
 
-        if (d_opt == 1) {
-		debugSocket();
-        } else {
-                daemonize();
+        if (testDir(dir) != EXIT_SUCCESS) { /* Checking dir right before the networking code starts (moved from in opt loop) */
+                exit(EXIT_FAILURE);
         }
-	
-	//printf("Server started on Port #%d\n", ntohs(port));
 
+        if (chdir(dir) != 0) {
+                perror("chdir");
+                exit(EXIT_FAILURE);
+        }
+
+        openlog(argv[0], LOG_PID, 0);       /* Opens system logging to track server errors */
+
+        if (d_opt == 0) {
+                if (daemon(0, 1) == -1) {
+                        perror("daemon");
+                        exit(EXIT_FAILURE);
+                }
+
+		printf("Directory: %s\n", dir);
+        }
+
+        startServer();
 }
 
 

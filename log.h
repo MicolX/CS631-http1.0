@@ -6,13 +6,25 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <libgen.h>
+#include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "connect.h"
 #include "sws.h"
 
-void
-writeLog(char *str);
+#define TIME_STR_MAX 20 /* Max size of time string as dictated by provided format */
+
+typedef struct log_t {
+        const char *remoteIp;
+        struct tm *time;
+        char *firstLine;
+        const char *status;
+        int contentLength;
+} Log;
+
+int
+writeLog(Log *log);
 
 #endif

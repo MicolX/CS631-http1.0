@@ -19,30 +19,43 @@
 #include "connect.h"
 #include "log.h"
 #include "parser.h"
+#include "response.h"
 #include "sws.h"
 
 #define DEBUG_BACKLOG 10
 #define SLEEP 5
 
+extern int domain;
+
+
 int
 verifyIp(const char *str);
 
 int
-open4Socket();
+openSocket();
 
-int
-open6Socket();
-
-void
-handle4Socket(int s);
-
-void
-handle6Socket(int s);
+//int
+//open4Socket();
+//
+//int
+//open6Socket();
 
 void
-selectSocket();
+handleSocket(int socket);
 
 void
-debugSocket();
+startServer();
+
+//void
+//handle4Socket(int s);
+//
+//void
+//handle6Socket(int s);
+
+//void
+//selectSocket();
+//
+//void
+//debugSocket();
 
 #endif
