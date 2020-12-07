@@ -161,9 +161,9 @@ handleSocket(int sock) {
                 }
         }
 
-        if (strncmp(request->uri, CGIPREFIX, strlen(CGIPREFIX)) == 0) {
-                char *uri = request->uri;
-                (void)strsep(&uri, "n");
+		if (strncmp(request->uri, CGIPREFIX, strlen(CGIPREFIX)) == 0 && c_opt == 1) {
+			char *uri = request->uri;
+			(void)strsep(&uri, "n");
 
                 if (runcgi(sockFd, uri, cgiDir) == -1) {
                         syslog(LOG_INFO, "Error running cgi : %m");

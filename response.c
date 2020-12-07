@@ -42,7 +42,7 @@ respond(char *rootpath, Request *req, Response *res) {
         magic_t cookie;
         char uri[MAXPATHLEN];
 
-        snprintf(uri, sizeof(uri) + sizeof(rootpath) + 1, "%s/%s", rootpath, req->uri);
+        snprintf(uri, MAXPATHLEN, "%s/%s", rootpath, req->uri);
 
         if (stat(uri, &sb) == -1) {
                 switch (errno) {
@@ -78,6 +78,12 @@ respond(char *rootpath, Request *req, Response *res) {
                 strlcpy(req->uri, uri, MAXPATHLEN);
         }
 
+		if (stat(req->uri, &sb) == -1) {
+			// log error
+			return -1;
+		}
+        
+		res->lastmtime = sb.st_mtime;
 
         if (strlen(req->ifms) > 0) {
                 if (strptime(req->ifms, "%a, %d %b %Y %T GMT", &ifmtime) == NULL) {
@@ -91,7 +97,6 @@ respond(char *rootpath, Request *req, Response *res) {
                 }
 
                 if (difftime(sb.st_mtime, mktime(&ifmtime)) > 0) {
-                        res->lastmtime = sb.st_mtime;
                         res->headonly = 0;
                 } else {
                         res->status = status[6];
@@ -148,8 +153,8 @@ reply(int socket, Request *req, Response *res) {
 
         if (req->version == 1.0) {
                 if (res->dirindex == 0 && strcmp(res->status, "200 OK\r\n") == 0) {
-                        char curtime[32];
-                        char mtime[32];
+                        char curtime[MAX_TIME];
+                        char mtime[MAX_TIME];
                         struct tm *curtm;
                         struct tm *mtm;
                         time_t now;
@@ -353,17 +358,17 @@ userdirhandler(char *uri, char newuri[]) {
 //
 //        fd = open("socket", O_WRONLY|O_CREAT|O_TRUNC, 0777);
 //
-////	if (reply(fd, req, res) == 0) {
-////		printf("reply successfully!!\n");
-////	} else {
-////		printf("reply failed\n");
-////	}
+//	if (reply(fd, req, res) == 0) {
+//		printf("reply successfully!!\n");
+//	} else {
+//		printf("reply failed\n");
+//	}
 //
-//        if (runcgi(fd, cgiuri, cgidir) == 0) {
-//                printf("cgi run succeed\n");
-//        } else {
-//                printf("cgi failed\n");
-//        }
+////        if (runcgi(fd, cgiuri, cgidir) == 0) {
+////                printf("cgi run succeed\n");
+////        } else {
+////                printf("cgi failed\n");
+////        }
 //
 //        char *uri = strdup("~mingyao/main/index.html");
 //        char new[MAXPATHLEN];
