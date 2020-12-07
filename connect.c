@@ -17,7 +17,7 @@ verifyIp(const char *str) {
 
 int
 openSocket() {
-        int sock, num;
+        int sock;
         void *s;
         socklen_t length, s_size;
         struct sockaddr_storage server;
@@ -31,7 +31,7 @@ openSocket() {
         }
 
         if ((sock = socket(domain, SOCK_STREAM, 0)) < 0) {
-                syslog(0, "Error creating IPv%d socket: %m", ipv);
+                syslog(LOG_INFO, "Error creating IPv%d socket: %m", ipv);
                 exit(EXIT_FAILURE);
         }
 
@@ -55,35 +55,27 @@ openSocket() {
                 if (i_opt == 1) {
                         int off = 0;
                         if (setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (void *) &off, sizeof(off)) < 0) {
-                                syslog(0, "Error setting socket option for both IPv values: %m");
+                                syslog(LOG_INFO, "Error setting socket option for both IPv values: %m");
                                 exit(EXIT_FAILURE);
                         }
                 }
         }
 
         if (bind(sock, (struct sockaddr *) s, s_size) != 0) {
-                syslog(0, "Error binding socket: %m");
+                syslog(LOG_INFO, "Error binding socket: %m");
                 exit(EXIT_FAILURE);
         }
 
         /* Find out assigned port number and print it out */
         length = sizeof(server);
         if (getsockname(sock, (struct sockaddr *) &server, &length) != 0) {
-                syslog(0, "Error getting socket name: %m");
+                syslog(LOG_INFO, "Error getting socket name: %m");
                 exit(EXIT_FAILURE);
         }
 
-        if (domain == PF_INET) {
-                struct sockaddr_in *s = (struct sockaddr_in *) &server;
-                num = ntohs(s->sin_port);
-        } else {
-                struct sockaddr_in6 *s = (struct sockaddr_in6 *) &server;
-                num = ntohs(s->sin6_port);
-        }
-        printf("Socket started on Port #%d", num);
 
         if (listen(sock, DEBUG_BACKLOG) < 0) {
-                syslog(0, "Error listening on socket: %m");
+                syslog(LOG_INFO, "Error listening on socket: %m");
                 exit(EXIT_FAILURE);
         }
 
@@ -98,24 +90,19 @@ handleSocket(int sock) {
         socklen_t size;
         Request *request = (Request *) malloc(sizeof(Request));
         Response *response = (Response *) malloc(sizeof(Response));
-        Log *log = (Log *) malloc(sizeof(Log));
 
         if (request == NULL) {
-                syslog(0, "Error allocating memory to request structure: %m");
+                syslog(LOG_INFO, "Error allocating memory to request structure: %m");
                 exit(EXIT_FAILURE);
         }
         if (response == NULL) {
-                syslog(0, "Error allocating memory to response structure: %m");
-                exit(EXIT_FAILURE);
-        }
-        if (log == NULL) {
-                syslog(0, "Error allocating memory to log structure : %m");
+                syslog(LOG_INFO, "Error allocating memory to response structure: %m");
                 exit(EXIT_FAILURE);
         }
 
         size = sizeof(client);
         if ((sockFd = accept(sock, (struct sockaddr *) &client, &size)) < 0) {
-                syslog(0, "Error accepting connection on socket: %m");
+                syslog(LOG_INFO, "Error accepting connection on socket: %m");
                 exit(EXIT_FAILURE);
         }
 
@@ -131,7 +118,7 @@ handleSocket(int sock) {
 
         bzero(buf, sizeof(buf));
         if ((rval = read(sockFd, buf, BUFSIZ)) < 0) {
-                syslog(0, "Error reading socket: %m");
+                syslog(LOG_INFO, "Error reading socket: %m");
                 return;
         }
 
@@ -141,7 +128,7 @@ handleSocket(int sock) {
 
         len = sizeof(addr);
         if (getpeername(sockFd, (struct sockaddr *) &addr, &len) < 0) {
-                syslog(0, "Error getting peer name: %m");
+                syslog(LOG_INFO, "Error getting peer name: %m");
                 return;
         }
 
@@ -156,70 +143,69 @@ handleSocket(int sock) {
         }
 
         if (rip == NULL) {
-                syslog(0, "inet_ntop error: %m");
+                syslog(LOG_INFO, "inet_ntop error: %m");
                 rip = "unknown";
         }
 
 
-		if (parse(buf, request) == -1) {
-			syslog(0, "Error parsing response: %m");
-			return;
-		}
+        if (parse(buf, request) == -1) {
+                syslog(LOG_INFO, "Error parsing response: %m");
+                return;
+        }
 
-		if (strchr(request->uri, (int)'~') != NULL) {
-			char *old = strdup(request->uri);
-			if (userdirhandler(old, request->uri) == -1) {
-				syslog(0, "Error fetching home directory : %m");
-				return;
-			}
-		}
+        if (strchr(request->uri, (int)'~') != NULL) {
+                char *old = strdup(request->uri);
+                if (userdirhandler(old, request->uri) == -1) {
+                        syslog(LOG_INFO, "Error fetching home directory : %m");
+                        return;
+                }
+        }
 
 		if (strncmp(request->uri, CGIPREFIX, strlen(CGIPREFIX)) == 0 && c_opt == 1) {
 			char *uri = request->uri;
 			(void)strsep(&uri, "n");
 
-			if (runcgi(sockFd, uri, cgiDir) == -1) {
-				syslog(0, "Error running cgi : %m");
-				return;
-			}
-		} else {
+                if (runcgi(sockFd, uri, cgiDir) == -1) {
+                        syslog(LOG_INFO, "Error running cgi : %m");
+                        return;
+                }
+        } else {
 
-			if (respond(dir, request, response) == -1) {
-					syslog(0, "Error composing response : %m");
-					return;
-			}
+                if (respond(dir, request, response) == -1) {
+                        syslog(LOG_INFO, "Error composing response : %m");
+                        return;
+                }
 
-			if (reply(sockFd, request, response) == -1) {
-					syslog(0, "Error sending response: %m");
-					return;
-			}
-		}
+                if (reply(sockFd, request, response) == -1) {
+                        syslog(LOG_INFO, "Error sending response: %m");
+                        return;
+                }
+        }
 
         if (time(&timer) == -1) {
-                syslog(0, "Error getting current time: %m");
+                syslog(LOG_INFO, "Error getting current time: %m");
                 return;
         }
 
         if ((gtime = gmtime(&timer)) == NULL) {
-                syslog(0, "Error converting current time to GMT time: %m");
+                syslog(LOG_INFO, "Error converting current time to GMT time: %m");
                 return;
         }
 
-        log->remoteIp = rip;
-        log->time = gtime;
-        log->firstLine = strtok(buf, "\n");
-        /* According to manual above has no errors; NULL case is invalid and won't make it this far */
-        log->status = response->status;
-        log->contentLength = response->contentlength;
+        const char *status = response->status;
+        long long length = response->contentlength;
 
-        if (writeLog(log) == -1) {
-                syslog(0, "Error converting current time to GMT time: %m");
+	printf("rip: %s\n", rip);
+	printf("status: %s", status);
+	printf("length: %lld\n", length);
+	
+        if (writeLog(rip, gtime, strtok(buf, "\n"), status, length) == -1) {
+                syslog(LOG_INFO, "Error converting current time to GMT time: %m");
                 return;
         }
 
 
         free(request);
-        free(log);
         close(sockFd);
 }
 
@@ -242,7 +228,7 @@ startServer() {
                         to.tv_sec = SLEEP;
                         to.tv_usec = 0;
                         if (select(socket + 1, &ready, 0, 0, &to) < 0) {
-                                syslog(0, "Error selecting socket: %m");
+                                syslog(LOG_INFO, "Error selecting socket: %m");
                                 continue;
                         }
                         if (FD_ISSET(socket, &ready)) {

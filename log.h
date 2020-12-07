@@ -14,7 +14,7 @@
 #include "connect.h"
 #include "sws.h"
 
-#define TIME_STR_MAX 20 /* Max size of time string as dictated by provided format */
+#define TIME_STR_MAX 21 /* Max size of time string as dictated by provided format */
 
 typedef struct log_t {
         const char *remoteIp;
@@ -25,6 +25,6 @@ typedef struct log_t {
 } Log;
 
 int
-writeLog(Log *log);
+writeLog(const char *rip, struct tm *time, char *firstLine, const char *status, long long contentLength);
 
 #endif
