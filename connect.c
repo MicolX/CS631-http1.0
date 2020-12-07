@@ -174,7 +174,7 @@ handleSocket(int sock) {
 			}
 		}
 
-		if (strncmp(request->uri, CGIPREFIX, strlen(CGIPREFIX)) == 0) {
+		if (strncmp(request->uri, CGIPREFIX, strlen(CGIPREFIX)) == 0 && c_opt == 1) {
 			char *uri = request->uri;
 			(void)strsep(&uri, "n");
 

@@ -102,10 +102,10 @@ main(int argc, char **argv)
                 exit(EXIT_FAILURE);
         }
 
-        if (chdir(dir) != 0) {
-                perror("chdir");
-                exit(EXIT_FAILURE);
-        }
+      //  if (chdir(dir) != 0) {
+      //          perror("chdir");
+      //          exit(EXIT_FAILURE);
+      //  }
 
         openlog(argv[0], LOG_PID, 0);       /* Opens system logging to track server errors */
 
