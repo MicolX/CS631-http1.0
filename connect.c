@@ -168,7 +168,6 @@ handleSocket(int sock) {
 			char *old = strdup(request->uri);
 			if (userdirhandler(old, request->uri) == -1) {
 					syslog(LOG_INFO, "Error fetching home directory");
-					return;
 			}
         }
 
@@ -178,29 +177,24 @@ handleSocket(int sock) {
 
 			if (runcgi(sockFd, uri, cgiDir) == -1) {
 					syslog(LOG_INFO, "Error running cgi : %m");
-					return;
 			}
         } else {
 
 			if (respond(dir, request, response) == -1) {
 					syslog(LOG_INFO, "Error composing response : %m");
-			//		return;
 			}
 
 			if (reply(sockFd, request, response) == -1) {
 					syslog(LOG_INFO, "Error sending response: %m");
-					return;
 			}
         }
 
         if (time(&timer) == -1) {
                 syslog(LOG_INFO, "Error getting current time: %m");
-                return;
         }
 
         if (writeLog(rip, gtime, strtok(buf, "\n"), response->status, response->contentlength) == -1) {
                 syslog(LOG_INFO, "Error converting current time to GMT time");
-                return;
         }
 
 
