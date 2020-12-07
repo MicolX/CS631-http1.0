@@ -22,7 +22,7 @@
 
 
 extern int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, port, logFd, ipv, rootfd;
-extern char **environ, *dir, *addr, *file, *ipAddr;
+extern char **environ, *dir, *addr, *file, *ipAddr, *cgiDir;
 
 
 int

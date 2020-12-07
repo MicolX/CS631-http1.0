@@ -13,7 +13,8 @@ writeLog(Log *log)
                 return -1;
         }
 
-	char *msg = malloc(strlen(log->remoteIp) + strlen(timeBuf) + strlen(log->firstLine) + strlen(log->status) + sizeof log->contentLength);
+//	char *msg = malloc(strlen(log->remoteIp) + strlen(timeBuf) + strlen(log->firstLine) + strlen(log->status) + sizeof log->contentLength);
+	char msg[BUFSIZ];
 	if (msg == NULL) {
                 syslog(0, "Error allocating memory to log string: %m");
                 return -1;
@@ -30,6 +31,6 @@ writeLog(Log *log)
                 return -1;
         }
 
-        free(msg);
+//        free(msg);
         return 0;
 }

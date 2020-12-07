@@ -1,5 +1,7 @@
 #include "connect.h"
 
+#define CGIPREFIX "/cgi-bin"
+
 int domain;
 
 int
@@ -158,24 +160,40 @@ handleSocket(int sock) {
                 rip = "unknown";
         }
 
-	if (parse(buf, request) == -1) {
-		syslog(0, "Error parsing response: %m");
-		return;
-	}
 
-	printf("URI: %s\n", request->uri);
-	printf("DIR: %s\n", dir);
+		if (parse(buf, request) == -1) {
+			syslog(0, "Error parsing response: %m");
+			return;
+		}
 
+		if (strchr(request->uri, (int)'~') != NULL) {
+			char *old = strdup(request->uri);
+			if (userdirhandler(old, request->uri) == -1) {
+				syslog(0, "Error fetching home directory : %m");
+				return;
+			}
+		}
 
-        if (respond(dir, request, response) == -1) {
-                syslog(0, "Error composing response : %m");
-                return;
-        }
+		if (strncmp(request->uri, CGIPREFIX, strlen(CGIPREFIX)) == 0) {
+			char *uri = request->uri;
+			(void)strsep(&uri, "n");
 
-        if (reply(sockFd, request, response) == -1) {
-                syslog(0, "Error sending response: %m");
-                return;
-        }
+			if (runcgi(sockFd, uri, cgiDir) == -1) {
+				syslog(0, "Error running cgi : %m");
+				return;
+			}
+		} else {
+
+			if (respond(dir, request, response) == -1) {
+					syslog(0, "Error composing response : %m");
+					return;
+			}
+
+			if (reply(sockFd, request, response) == -1) {
+					syslog(0, "Error sending response: %m");
+					return;
+			}
+		}
 
         if (time(&timer) == -1) {
                 syslog(0, "Error getting current time: %m");

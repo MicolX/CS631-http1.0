@@ -7,7 +7,6 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#define MAX_PATH  255
 #define MAX_TIME  30
 
 typedef enum Method {
@@ -18,7 +17,7 @@ typedef enum Method {
 
 typedef struct request_t {
         enum Method method;
-        char uri[MAX_PATH];
+        char uri[MAXPATHLEN];
         float version;
         char ifms[MAX_TIME];
         int errcode;
