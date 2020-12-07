@@ -1,16 +1,15 @@
 #ifndef CONNECT_H
 #define CONNECT_H
 
-#include <arpa/inet.h>
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/wait.h>
 
+#include <arpa/inet.h>
 #include <netinet/in.h>
-
 #include <netdb.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,35 +26,16 @@
 
 extern int domain;
 
-
 int
 verifyIp(const char *str);
 
 int
-openSocket();
-
-//int
-//open4Socket();
-//
-//int
-//open6Socket();
+openSocket(void);
 
 void
 handleSocket(int socket);
 
 void
-startServer();
-
-//void
-//handle4Socket(int s);
-//
-//void
-//handle6Socket(int s);
-
-//void
-//selectSocket();
-//
-//void
-//debugSocket();
+startServer(void);
 
 #endif

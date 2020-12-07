@@ -5,6 +5,20 @@ Implementation of 'sws' command under BSD Unix system
 Team members: Mingyao Xiong, Liam Brew
 
 *** Updates ***
+-- Week of Nov 30 to Dec 7 --
+1. Team met initially after class to discuss and incorporate feedback
+  - Decided to scrap our interpretation of the dual stack networking code as it was quickly becoming overburdened;
+  pivoted to modifying the provided sample instead.
+  - Likewise for using the daemon system call
+2. Met later in the week to synchronize progress
+  - response generation
+  - reply sending
+  - user directories
+  - daemon server
+3. Met 7 Dec to finalize project
+  - added remaining logging functionality
+  - worked more on CGIs
+  - commenting, styling etc.
 
 --- Nov.23.2020 ---
 1. merge response.c into the project

@@ -1,17 +1,32 @@
+/*
+ * parse.c
+ * Parses and interprets incoming requests made to the server.
+ *
+ * Mingyao Xiong
+ * Liam Brew
+ *
+ * Based on material from Stevens Institute of Technology's
+ * CS 631 APUE during the Fall 2020 semester.
+ */
+
 #include "parser.h"
 
-#define LIMIT 2
+#define CGI "/cgi-bin/"
 #define HEADERSIZE 1
+#define LIMIT 2
 #define VERSION10 "HTTP/1.0"
 #define VERSION09 "HTTP/0.9"
-#define CGI "/cgi-bin/"
 
 const char* Headers[HEADERSIZE] = {
         "If-Modified-Since: ",
 };
 
+int getrline(char *, const char *, Request *);
+int getrheader(char *, const char *, Request *)
 
-
+/*
+ * Interprets the method, errcode, URI, and version data of a request.
+ */
 int
 getrline(char *p, const char *end, Request *req)
 {
@@ -61,6 +76,9 @@ getrline(char *p, const char *end, Request *req)
         return 0;
 }
 
+/*
+ * Interprets the ifms data of the request.
+ */
 int
 getrheader(char *p, const char *end, Request *req)
 {
@@ -88,6 +106,9 @@ getrheader(char *p, const char *end, Request *req)
         return -1;
 }
 
+/*
+ * Fully parses the request and saves its data in the corresponding struct.
+ */
 int
 parse(char *request, Request *req)
 {

@@ -1,11 +1,30 @@
+/*
+ * connect.c
+ * Handles networking aspect of the sws program.
+ *
+ * Mingyao Xiong
+ * Liam Brew
+ *
+ * Based on material from Stevens Institute of Technology's
+ * CS 631 APUE during the Fall 2020 semester.
+ */
+
 #include "connect.h"
 
 #define CGIPREFIX "/cgi-bin"
 
 int domain;
 
+int openSocket(void);
+Int handleSocket(int);
+
+/*
+ * Determines if a string represents a valid IP address, and if so what
+ * IP version this address is.
+ */
 int
-verifyIp(const char *str) {
+verifyIp(const char *str)
+{
         if ((inet_pton(AF_INET, str, &ipAddr)) == 1) {
                 return 4;
         } else if ((inet_pton(AF_INET6, str, &ipAddr)) == 1) {
@@ -15,15 +34,18 @@ verifyIp(const char *str) {
         }
 }
 
+/*
+ * Establishes a socket connection using the data passed in as options.
+ */
 int
-openSocket() {
+openSocket(void)
+{
         int sock;
         void *s;
         socklen_t length, s_size;
         struct sockaddr_storage server;
 
-        /* Default is IPv6, but we then become dual
-         * stack by disabling IPV6_ONLY on the socket. */
+
         if (ipv == 4) {
                 domain = PF_INET;
         } else {
@@ -50,8 +72,6 @@ openSocket() {
                 s = sin;
                 s_size = sizeof(*sin);
 
-                /* Neither v4 nor v6 was explicitly
-                 * requested, so we do both. */
                 if (i_opt == 1) {
                         int off = 0;
                         if (setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (void *) &off, sizeof(off)) < 0) {
@@ -66,7 +86,6 @@ openSocket() {
                 exit(EXIT_FAILURE);
         }
 
-        /* Find out assigned port number and print it out */
         length = sizeof(server);
         if (getsockname(sock, (struct sockaddr *) &server, &length) != 0) {
                 syslog(LOG_INFO, "Error getting socket name");
@@ -82,9 +101,13 @@ openSocket() {
         return sock;
 }
 
-
+/*
+ * Handles connections on a socket by receiving, parsing, and responding
+ * to requests.
+ */
 void
-handleSocket(int sock) {
+handleSocket(int sock)
+{
         int sockFd, rval;
         socklen_t size;
         socklen_t len;
@@ -155,42 +178,44 @@ handleSocket(int sock) {
         }
 
         if ((gtime = gmtime(&timer)) == NULL) {
-			syslog(LOG_INFO, "Error converting current time to GMT time");
-			return;
+                syslog(LOG_INFO, "Error converting current time to GMT time");
+                return;
         }
 
         if (parse(buf, request) == -1) {
-			syslog(LOG_INFO, "Error parsing response");
+                syslog(LOG_INFO, "Error parsing response");
+
+                valid = 1;
         }
 
         if (strchr(request->uri, (int)'~') != NULL) {
-			request->hastilde = 1;
-			char *old = strdup(request->uri);
-			if (userdirhandler(old, request->uri) == -1) {
-					syslog(LOG_INFO, "Error fetching home directory");
-			}
+                char *old = strdup(request->uri);
+                if (userdirhandler(old, request->uri) == -1) {
+                        syslog(LOG_INFO, "Error fetching home directory");
+                        return;
+                }
         }
 
         if (strncmp(request->uri, CGIPREFIX, strlen(CGIPREFIX)) == 0 && c_opt == 1) {
-			char *uri = request->uri;
-			(void)strsep(&uri, "n");
+                char *uri = request->uri;
+                (void)strsep(&uri, "n");
 
-			if (runcgi(sockFd, uri, cgiDir) == -1) {
-					syslog(LOG_INFO, "Error running cgi : %m");
-			}
+                if (runcgi(sockFd, uri, cgiDir) == -1) {
+                        syslog(LOG_INFO, "Error running cgi");
+                }
         } else {
 
-			if (respond(dir, request, response) == -1) {
-					syslog(LOG_INFO, "Error composing response : %m");
-			}
+                if (respond(dir, request, response) == -1) {
+                        syslog(LOG_INFO, "Error composing response");
+                }
 
-			if (reply(sockFd, request, response) == -1) {
-					syslog(LOG_INFO, "Error sending response: %m");
-			}
+                if (reply(sockFd, request, response) == -1) {
+                        syslog(LOG_INFO, "Error sending response");
+                }
         }
 
         if (time(&timer) == -1) {
-                syslog(LOG_INFO, "Error getting current time: %m");
+                syslog(LOG_INFO, "Error getting current time");
         }
 
         if (writeLog(rip, gtime, strtok(buf, "\n"), response->status, response->contentlength) == -1) {
@@ -199,11 +224,15 @@ handleSocket(int sock) {
 
 
         free(request);
-        close(sockFd);
+        (void)close(sockFd);
 }
 
+/*
+ * Handles server startup and loops to continually managa socket connections as they come in.
+ */
 void
-startServer() {
+startServer(void)
+{
         int socket;
 
         socket = openSocket();
@@ -221,7 +250,7 @@ startServer() {
                         to.tv_sec = SLEEP;
                         to.tv_usec = 0;
                         if (select(socket + 1, &ready, 0, 0, &to) < 0) {
-                                syslog(LOG_INFO, "Error selecting socket: %m");
+                                syslog(LOG_INFO, "Error selecting socket");
                                 continue;
                         }
                         if (FD_ISSET(socket, &ready)) {

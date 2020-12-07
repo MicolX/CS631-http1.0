@@ -1,3 +1,14 @@
+/*
+ * response.c
+ * Builds a response based on the user's request and writes it back to them.
+ *
+ * Mingyao Xiong
+ * Liam Brew
+ *
+ * Based on material from Stevens Institute of Technology's
+ * CS 631 APUE during the Fall 2020 semester.
+ */
+
 #include "response.h"
 
 #define MESSAGESIZE 256
@@ -21,6 +32,9 @@ const char* status[] = {
 };
 
 
+/*
+ * Uses request data to build, if applicable, the appropriate response.
+ */
 int
 respond(char *rootpath, Request *req, Response *res) {
         if (req->errcode != 0) {
@@ -146,7 +160,9 @@ int
         return strcmp((*a)->fts_name, (*b)->fts_name);
 }
 
-
+/*
+ * Sends the response (including file transversal work, if applicable) back the client.
+ */
 int
 reply(int socket, Request *req, Response *res) {
         char message[MESSAGESIZE];
@@ -243,6 +259,9 @@ reply(int socket, Request *req, Response *res) {
         return 0;
 }
 
+/*
+ * Executes any CGI requests.
+ */
 int
 runcgi(int socket, char *uri, char *dir) {
         char *path, fullpath[MAXPATHLEN];
@@ -286,6 +305,9 @@ runcgi(int socket, char *uri, char *dir) {
         return 0;
 }
 
+/*
+ * Handles directory pathing based on the presence of a user directory.
+ */
 int
 userdirhandler(char *uri, char newuri[]) {
         char *before, *uname;

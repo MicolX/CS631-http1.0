@@ -1,9 +1,25 @@
+/*
+ * sws.c
+ * Serves as a simple web server (sws) to handle HEAD and GET requests on the UNIX file system hierarchy.
+ * Also supports features such as CGIs and user directories.
+ *
+ * Mingyao Xiong
+ * Liam Brew
+ *
+ * Based on material from Stevens Institute of Technology's
+ * CS 631 APUE during the Fall 2020 semester.
+ */
+
 #include "sws.h"
 
 int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd = STDOUT_FILENO, port = 8080, ipv = 6, rootfd;      
 char *dir, *cgiDir, *addr, *file, *ipAddr;
 
+int main(int, char **);
 
+/*
+ * Determines if a directory pathing is valid/
+ */
 int
 testDir(char *dir)
 {
@@ -18,6 +34,9 @@ testDir(char *dir)
         }
 }
 
+/*
+ * Parses and validations options. Starts the server depending on the input instructions.
+ */
 int
 main(int argc, char **argv)
 {
@@ -29,10 +48,6 @@ main(int argc, char **argv)
                         switch (opt) {
                                 case 'c':
                                         cgiDir = optarg;
-
-
-                                        testDir(cgiDir);  //TODO: move this to the CGI code base
-
                                         c_opt = 1;
                                         break;
 
@@ -122,6 +137,8 @@ main(int argc, char **argv)
         }
 
         startServer();
+
+        return EXIT_SUCCESS;
 }
 
 
