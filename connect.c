@@ -15,8 +15,6 @@
 
 int domain;
 
-int openSocket(void);
-Int handleSocket(int);
 
 /*
  * Determines if a string represents a valid IP address, and if so what
@@ -184,11 +182,10 @@ handleSocket(int sock)
 
         if (parse(buf, request) == -1) {
                 syslog(LOG_INFO, "Error parsing response");
-
-                valid = 1;
         }
 
         if (strchr(request->uri, (int)'~') != NULL) {
+				request->hastilde = 1;
                 char *old = strdup(request->uri);
                 if (userdirhandler(old, request->uri) == -1) {
                         syslog(LOG_INFO, "Error fetching home directory");

@@ -1,0 +1,668 @@
+commit bcdc84bd4367dec222b884aca698afa50620990e
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Dec 7 15:27:51 2020 -0500
+
+    final clean up and added commenting
+
+commit bed6bfda66ea7b7cf83d83609b32a0de07355023
+Author: MicolX <git@github.com>
+Date:   Mon Dec 7 11:36:21 2020 +0000
+
+    fix a bug that the server won't disconnect after receiving a bad request
+
+commit 1a3bdbe7b85263b48463b3178df134e057ca57f7
+Merge: 7407074 0715b32
+Author: MicolX <git@github.com>
+Date:   Mon Dec 7 11:27:19 2020 +0000
+
+    Merge branch 'master' of https://github.com/MicolX/CS631-http1.0
+
+commit 0715b328185882ac584cc6535cc17f8405a8bfe4
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Dec 7 18:57:03 2020 +0000
+
+    included syslog.h to enable system logging
+
+commit 9f44a1296d0672c5ab1e629d66a722f7be087a8c
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Dec 7 18:33:55 2020 +0000
+
+    fixed issue with first line getting its last index cut off
+
+commit 30b604c67e06675f542b2743ba8db93e33e535a7
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Dec 7 13:20:55 2020 -0500
+
+    clean up
+
+commit 5c56e3925bc34afba4d58cb603f866c90d98ccb9
+Merge: ee0f86a 25e2ff7
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Dec 7 17:49:46 2020 +0000
+
+    Merge branch 'master' of github.com:MicolX/CS631-http1.0
+
+commit ee0f86a3b1154d522c03ace3feb838d2088a0f61
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Dec 7 17:49:15 2020 +0000
+
+    realized the existence of carriage returns and finally got writeLog() working
+
+commit d7c6b0265a7ed942dd76b562acb3618b72fde2fe
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Dec 7 11:15:09 2020 -0500
+
+    reverted to write() chain method
+
+commit 6e7fb5ab87aef3b5d1286ec704287a35a2d17350
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Dec 7 16:10:22 2020 +0000
+
+    added statBuf to remove trailing newline from status
+
+commit becffb45d5965b0edd56f09f4fbe06ba4081240a
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Dec 7 10:41:37 2020 -0500
+
+    incorporated snprintf()  writeLog() method
+
+commit 9c18d41329ac9a4764c6ea6aef2aa103c5390a8c
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Dec 7 10:38:47 2020 -0500
+
+    incorporated write() chaining writeLog() method
+
+commit 7407074bfbe53f126aaa10a02c7d90611cb0c635
+Author: MicolX <git@github.com>
+Date:   Mon Dec 7 11:26:37 2020 +0000
+
+    fix some responses that didn't obey the http protocol
+
+commit 6e36350dc1cb4b0adbdf16bbb4390a54bd5df296
+Merge: 290aff1 9f44a12
+Author: MicolX <git@github.com>
+Date:   Mon Dec 7 10:02:11 2020 +0000
+
+    Merge branch 'master' of https://github.com/MicolX/CS631-http1.0
+
+commit 290aff16add97e5ddc85bcf9d6bf68a0f5bf7788
+Merge: 59ccb79 30b604c
+Author: MicolX <git@github.com>
+Date:   Mon Dec 7 10:01:50 2020 +0000
+
+    solve conflicts
+
+commit 59ccb79f291a2e53ae9c901597a58a72ffbd2115
+Author: MicolX <git@github.com>
+Date:   Mon Dec 7 09:46:38 2020 +0000
+
+    fix a bug which make the server reponse nothing when receiving nonsenses
+
+commit 25e2ff72c2ceca4c99957fd47e81256fe0feae4c
+Merge: ad1302d d7c6b02
+Author: MicolX <git@github.com>
+Date:   Mon Dec 7 09:04:08 2020 +0000
+
+    conflicts solved
+
+commit ad1302d56b21f6857674cf9140cbc4f8d9606a92
+Author: MicolX <git@github.com>
+Date:   Mon Dec 7 08:58:09 2020 +0000
+
+    Fix mtime error in response.c
+
+commit 27973ffb010757524ed9e58dc873c15c7d57d4b4
+Merge: ee61b57 500da57
+Author: Michael <MicolX@users.noreply.github.com>
+Date:   Mon Dec 7 01:17:48 2020 -0500
+
+    Merge pull request #3 from MicolX/lbrew
+    
+    finalizing
+
+commit 500da57bd732949e19ad1a8d74f552c31b8057f6
+Author: MicolX <git@github.com>
+Date:   Mon Dec 7 06:10:52 2020 +0000
+
+    change msg in log.c to char[], integrated runcgi() and userdirhandler() into connect.c
+
+commit d3a561bee8fd7aaf8371e4509145b33ed1f3ccf5
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Dec 7 00:49:30 2020 +0000
+
+    added default STDOUT fd for logFd on -d opt
+
+commit 81a3fed0fcc5e8f68d52e2ee0ba51f621f06db58
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Dec 6 22:56:16 2020 +0000
+
+    IT WORKS YES!!!!!!
+
+commit af84accb8802d30e04df8691165ce4ea848f5a28
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Dec 6 17:29:35 2020 -0500
+
+    removed constant error request string
+
+commit 2c70246eb38af154d007689f1dcda38c9ce52bed
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Dec 6 17:15:11 2020 -0500
+
+    included CGI code
+
+commit e3369e6bf5074ed3ffb9a03009fb11d5aea60714
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Dec 6 22:11:41 2020 +0000
+
+    updated connect.h
+
+commit 54e4cebdac74502f273826a146a5e326da57f355
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Dec 6 03:26:03 2020 -0500
+
+    commented out response's main()
+
+commit db532d48cea57540086581c8c581fb4864608ac7
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Dec 6 03:25:49 2020 -0500
+
+    changed successful return value of log.c to better conform to standards
+
+commit aec52f0b64f1bd083038ab5bb2a32ee59cc5e115
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Dec 5 17:08:50 2020 +0000
+
+    fixed typing comparison issue
+
+commit 5b236df84e3bc61ac467f332b5a009fd1b73d378
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Dec 5 17:07:54 2020 +0000
+
+    fixed typing issues
+
+commit 1137a466258bce5e250db08f4458ab8465840e30
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Dec 5 17:06:55 2020 +0000
+
+    fixed issue with gmtime struct naming
+
+commit a201fe8acb4f81e247b5232844dcc3fac54f2e53
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Dec 6 02:26:42 2020 -0500
+
+    added responding, replying and logging to the networking code
+
+commit a3fc789ceb72b3152e7db70c5235b83bee27766b
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Dec 6 02:26:17 2020 -0500
+
+    modified logging to include proper time formatting
+
+commit 451c02c40ed5e92d8e119590403b960fe2a37e05
+Merge: 3683d03 c012d6e
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Dec 6 01:25:59 2020 -0500
+
+    Merge branch 'mxiong' into lbrew
+
+commit c012d6eda3c10ba3dd47c11ad084f822cfd7296d
+Merge: aeef08d 6fdb171
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Dec 6 01:25:50 2020 -0500
+
+    Merge remote-tracking branch 'origin/mxiong' into mxiong
+
+commit 3683d03931a8c8301ca7b030ca2a1dcf325c7c2d
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Dec 6 01:25:28 2020 -0500
+
+    added parsing to socket handling
+
+commit 57d6d02d126430c4f200fc5c91695787eb2deeeb
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Dec 5 07:15:26 2020 +0000
+
+    tested dual stack on VM
+
+commit ae29835aff2ff782d6f8d763e0c3eaf8132ce4f4
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Dec 5 16:58:54 2020 -0500
+
+    added initial dual stack socket support
+
+commit b49d32b77862d173bad7f54255661d3a026d2488
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Dec 5 16:13:11 2020 -0500
+
+    deleted snapshot files
+
+commit 3868bd691ecaa44c798147fbc7e47ce640cf11d8
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Dec 5 06:58:26 2020 +0000
+
+    completed VM testing
+
+commit a139400c494bab006cbc2114d4da72c8b0100542
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Dec 5 01:35:57 2020 -0500
+
+    fixed typo on ipv4 formatting
+
+commit 2d38557c476ec00555793ba806ec96cedbc531e4
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Dec 5 01:34:35 2020 -0500
+
+    removed process code as daemon(3) rendered it redundant
+
+commit 90279627293c4db498b985abba9dc61af35b4b84
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Dec 5 01:34:00 2020 -0500
+
+    removed defunct process code from Makefile
+
+commit 33da18ffd9d2a40a985be0111abab93238e02110
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Dec 5 01:33:33 2020 -0500
+
+    improved directory testing by moving code into its own method
+
+commit 1ba9eaeb0d298bcc70ac20ded2c53d9b822b60fe
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Dec 5 01:24:39 2020 -0500
+
+    added logging struct
+
+commit 6fdb171c79b3f72e90b359d7a360ad5ff46a50b9
+Author: MicolX <git@github.com>
+Date:   Fri Dec 4 17:37:01 2020 +0000
+
+    add a function to handle '~'
+
+commit 4511ff8f689829a53675b015573b59695d20a59a
+Author: MicolX <git@github.com>
+Date:   Fri Dec 4 11:47:32 2020 +0000
+
+    bugs fixing
+
+commit e055769c37ea4465ddd435b17dc8d02d70ab033b
+Author: MicolX <git@github.com>
+Date:   Fri Dec 4 06:38:26 2020 +0000
+
+    implement directory indexing and cgi
+
+commit d7c201e4608a365e82e4a7d7dd4b51f7d3f14122
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Nov 30 22:33:29 2020 +0000
+
+    fixed issues with selective build Makefile
+
+commit e584bf0df368ffcdd10d79fd3f9578ace2d3eaa1
+Merge: 05d613a 340062e
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Nov 30 10:45:01 2020 -0500
+
+    Merge remote-tracking branch 'origin/lbrew' into lbrew
+    
+    # Conflicts:
+    #       connect.c
+    #       sws.c
+
+commit 05d613a3082808d50ffa1238180c464839bffe6a
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Nov 30 10:42:00 2020 -0500
+
+    updated Makefile to selectively build changed files
+
+commit a8540b1901149efaf150d3139d137208a59a8054
+Author: MicolX <git@github.com>
+Date:   Mon Nov 23 19:50:08 2020 +0000
+
+    record updates
+
+commit 340062eed182317dc5a5548b803a78f0286238cc
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Nov 23 14:46:07 2020 -0500
+
+    added responses to conenct.c
+
+commit 10fc67ad1eabe6629e9fb4dc27f34f4838c7a93d
+Merge: ee61b57 28f0f3b
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Nov 23 14:39:35 2020 -0500
+
+    Merge remote-tracking branch 'origin/mxiong' into lbrew
+    
+    # Conflicts:
+    #       connect.c
+    #       sws.c
+
+commit 9b8b03c28acf36a8eb37c0d1966960572288c321
+Author: MicolX <git@github.com>
+Date:   Mon Nov 23 19:14:09 2020 +0000
+
+    merge reponse part into the project
+
+commit 28f0f3bdd163ad2010adf887825b81aec387b2cf
+Author: MicolX <git@github.com>
+Date:   Sat Nov 21 22:27:54 2020 +0000
+
+    new branch for debug
+
+commit 204d37171ac0691dd7fb4fa28858050bfaf08a9e
+Author: MicolX <git@github.com>
+Date:   Sat Nov 21 16:38:21 2020 +0000
+
+    fix an issue that ends up comparing unsigned int with signed int
+
+commit 2a45f577d7b597debb8280720a7ac26f210d048c
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Nov 22 17:35:25 2020 -0500
+
+    added initial parsing for IPv4 reading to test compatability
+
+commit aeef08d3d2c5c3b8da745282db1b12f402c6f74d
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Nov 21 03:45:37 2020 +0000
+
+    added tar file
+
+commit 9cf4a20896fa739a6cfdb88c8f555c7b523eb28e
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Nov 21 03:26:08 2020 +0000
+
+    added response functionality to lbrew's ongoing work
+
+commit d974edeaaeae1f229a36ed3254b2df1af7692333
+Merge: ee61b57 a8540b1
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Nov 23 15:14:52 2020 -0500
+
+    Merge branch 'mxiong' into test
+    
+    # Conflicts:
+    #       README.md
+    #       connect.c
+    #       sws.c
+
+commit ee61b57fa7eb475797f8ae352940b56e95ad3ce5
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Nov 21 02:27:41 2020 +0000
+
+    improved logging messages for client connection, valid/invalid requests, and disconnection
+
+commit b362091819718376412152a987b8b3cfd95a47ab
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Nov 23 14:08:43 2020 -0500
+
+    updated README.md to reflect 22 Nov meeting
+
+commit 1b88de922aa1f5b9071df314a20232b2ed67be7b
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Mon Nov 23 14:08:24 2020 -0500
+
+    unified connect.c's printing and logging standards
+
+commit b0597edf1e3b2ae6f6a93c614883a4e27596174c
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Fri Nov 20 23:33:19 2020 +0000
+
+    fixed issue with directory validation (check was performed on path not DIR)
+
+commit 9fffac5a28c1776ef0339ce49beebbf35ca64076
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Fri Nov 20 20:16:52 2020 +0000
+
+    added basic logging to test parser
+
+commit e1f07d19e06fb3a072778c9b7b4ebcbf536f26a0
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Fri Nov 20 15:30:46 2020 +0000
+
+    fixed issue with string lenth typing
+
+commit 9641f038d2da384bd6ac9525353acdd750872e54
+Merge: 92a4c64 f2cf14e
+Author: Liam Brew <33580926+Liam-Brew@users.noreply.github.com>
+Date:   Sun Nov 22 17:22:50 2020 -0500
+
+    Merge pull request #2 from MicolX/lbrew
+    
+    Lbrew
+
+commit 92a4c644dc1c5a76c569f464b9329840a2df6f39
+Merge: 8a01ea4 89f02b7
+Author: MicolX <git@github.com>
+Date:   Sat Nov 21 13:16:27 2020 +0000
+
+    Merge branch 'master' of https://github.com/MicolX/CS631-http1.0
+
+commit 8a01ea48f5b0b97bc42682928d8d790be8e6e512
+Author: MicolX <git@github.com>
+Date:   Sat Nov 21 13:00:13 2020 +0000
+
+    implement response functionality
+
+commit f2cf14e3066ecf57568687d6c184cd43ccb59e3b
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Fri Nov 20 15:20:27 2020 +0000
+
+    fixed issue with directory testing
+
+commit c9fb7ccddb31f136fcaef6a62f3e3014c5123b8d
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Fri Nov 20 15:20:14 2020 +0000
+
+    enabled daemonization for testing
+
+commit 1483412e25c65ec5741f38301b3ba739efc3be22
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Fri Nov 20 15:19:41 2020 +0000
+
+    fixed typo
+
+commit b2c085118100a642ed6c6c4b6d1d3f82a66cc381
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Nov 22 17:14:41 2020 -0500
+
+    added initial parsing for IPv6 reading to test compatability
+
+commit 08ffb9755f6e16d93463ba01df927e91c86d7f47
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Nov 22 17:14:17 2020 -0500
+
+    disabled parser.c's debugging main()
+
+commit 2c44a261c895c3446eda361a3093af770b833f07
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Nov 22 17:13:42 2020 -0500
+
+    updated Makefile to include parser.c
+
+commit f6b3cd7e839807048396ac6b88779356083e6916
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Nov 22 15:51:54 2020 -0500
+
+    updated daemon's chdir() to reflect dir argument
+
+commit 8e87fdbf7baa55349b92049a52f848f6d7a1b8c4
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Nov 22 15:50:58 2020 -0500
+
+    added directory validation on -c option and dir parameter
+
+commit bcce3fc543350e485ef8d3b9ebab652d57680d7b
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Fri Nov 20 13:26:42 2020 +0000
+
+    cleanup of unused features
+
+commit 9eab06c1314f6302af86382a53758857396d1b58
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Fri Nov 20 13:20:32 2020 +0000
+
+    moved remainder of process code to process.c
+
+commit 178ddcc0881ebbe0c60b178f2a15acd59e426091
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Fri Nov 20 13:19:34 2020 +0000
+
+    added test logging to daemon process
+
+commit 7aea0b02fff9be7c6a0c8c41c5aa5125557e33f6
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Fri Nov 20 13:18:42 2020 +0000
+
+    removed unnecessary blocksize calculation from file logging
+
+commit e1b503293003231f367e2e3e54b574e95cbd8612
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Fri Nov 20 13:18:18 2020 +0000
+
+    added process.c to Makefile build
+
+commit 6a36723f8895da008f32eae95e67fc40ec04ccf1
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Nov 22 01:30:10 2020 -0500
+
+    moved daemonization code to its own file for organziational purposes
+
+commit 241cf4759aa6c973dba5e061819f0bd4224b02ca
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Nov 22 01:29:25 2020 -0500
+
+    enhanced connect's error handling
+
+commit 89f02b7d72bb93f21adef2fc0feaef4c74bc5b95
+Author: Liam Brew <33580926+Liam-Brew@users.noreply.github.com>
+Date:   Thu Nov 19 17:48:44 2020 -0500
+
+    Update README.md
+
+commit 4ed131c0809add0f644bfe8100be00b31796bf6f
+Merge: ac51932 b836888
+Author: Liam Brew <33580926+Liam-Brew@users.noreply.github.com>
+Date:   Thu Nov 19 17:12:43 2020 -0500
+
+    Merge pull request #1 from MicolX/lbrew
+    
+    merge Liam's branch into master
+
+commit ac5193211640a9a49c2d7127de30a31e7e55aca1
+Author: MicolX <git@github.com>
+Date:   Thu Nov 19 22:11:33 2020 +0000
+
+    simplify and make the Request struct more reasonable
+
+commit 5562ccd2f68fc51a590a4c34604c9e949dacf283
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Thu Nov 19 21:05:21 2020 +0000
+
+    fixed issue with debugSocket() typing
+
+commit 02bfc17c6a8ea1cdb730a33e10f31120ec5cb6dd
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Nov 21 22:50:42 2020 -0500
+
+    added one-at-a-time debug socket
+
+commit b83688830f0a2490b996f0c2e7e732a3084ff194
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Wed Nov 18 16:10:50 2020 +0000
+
+    fixed issue with inet_aton being used on ipv4
+
+commit 1ccc4f96f11349abbd90ad6c1561cebe9cc0363a
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Thu Nov 19 16:18:52 2020 -0500
+
+    set default IPv to 6
+
+commit ffe326f3645c916eea56a3612670e4d029142b03
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Thu Nov 19 16:18:32 2020 -0500
+
+    split IPv4/6 address differentiation into two different methods for simplicity's sake
+
+commit 0088b692ba3ae6e8a464adbf2fc3b8ecf9256708
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Wed Nov 18 15:16:59 2020 +0000
+
+    fixed accidental deletions of import statements
+
+commit f94f7940c895dc9256e5345db5bcc53d0d060772
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Thu Nov 19 16:01:12 2020 -0500
+
+    added IPv4/6 address differentiation
+
+commit dba6f927e088bd13a8027e4340c59907ffa79b38
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Thu Nov 19 15:59:57 2020 -0500
+
+    added IPv4/6 checking and validation for -i's user input address
+
+commit f033fcf1f138dd2b08f791cc36f016a75a65677a
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Thu Nov 19 14:05:30 2020 -0500
+
+    added writeLog() to let users write in optimal blksize chunks to the designated log file
+
+commit 2700370d4d9a5a935a488199956d69f2c647cbe0
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sun Nov 15 00:59:25 2020 +0000
+
+    solved issue with -d option
+
+commit 1a229cf45006a2fc917acb63f849ea7fd2be5671
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Nov 14 16:00:20 2020 -0500
+
+    updated options parsing to remove duplicate error handling
+
+commit df1d0e062bd22efc6e56886f9b6e46bf59bfcc42
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Nov 14 16:00:01 2020 -0500
+
+    updated connect.h to include connect.c methods
+
+commit 781e6917fad2ac4dc38494a2b540207ee3a6b532
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Nov 14 15:56:46 2020 -0500
+
+    added code to establish simple debugging connections
+
+commit e3810c9ae79aa114749f7b221b1c8d488a0b8171
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Nov 14 15:55:53 2020 -0500
+
+    added Makefile
+
+commit 63ac9860eb6cbdbee10c01e900082d50b84f9b91
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Sat Nov 14 20:08:08 2020 +0000
+
+    tested initial options parsing
+
+commit ce7143e8b79434e8bf55cd0217dd5ead777b148a
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Thu Nov 12 16:19:28 2020 -0500
+
+    added daemonization
+
+commit 8404c4551814380fc20e00037b5d0e611c49a869
+Author: MicolX <git@github.com>
+Date:   Thu Nov 12 06:18:34 2020 +0000
+
+    parser is able to extract information from a valid HTTP/1.0 message
+
+commit 46fb52b35d16b938c13a2b096f02eacccb785de2
+Author: Liam Brew <lbrew@stevens.edu>
+Date:   Thu Nov 12 01:17:29 2020 -0500
+
+    added initial program options parsing
+
+commit 140e283ff77e81ec3b3cfe2ad86bcf55ecfc8445
+Author: MicolX <git@github.com>
+Date:   Tue Nov 10 16:19:13 2020 +0000
+
+    first commit

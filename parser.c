@@ -22,7 +22,7 @@ const char* Headers[HEADERSIZE] = {
 };
 
 int getrline(char *, const char *, Request *);
-int getrheader(char *, const char *, Request *)
+int getrheader(char *, const char *, Request *);
 
 /*
  * Interprets the method, errcode, URI, and version data of a request.

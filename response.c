@@ -174,7 +174,6 @@ reply(int socket, Request *req, Response *res) {
 		if (req->errcode != 0) {
 			snprintf(message, sizeof(message), "HTTP/1.0 %s\r\n", res->status);
 			if (write(socket, message, strlen(message)) != (signed int)strlen(message)) {
-				// log error
 				return -1;
 			}
 			return 0;
