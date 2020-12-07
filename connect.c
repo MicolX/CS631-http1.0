@@ -150,7 +150,7 @@ handleSocket(int sock) {
 
         if (parse(buf, request) == -1) {
                 syslog(LOG_INFO, "Error parsing response: %m");
-                return;
+             //   return;
         }
 
         if (strchr(request->uri, (int)'~') != NULL) {
@@ -165,21 +165,21 @@ handleSocket(int sock) {
 			char *uri = request->uri;
 			(void)strsep(&uri, "n");
 
-                if (runcgi(sockFd, uri, cgiDir) == -1) {
-                        syslog(LOG_INFO, "Error running cgi : %m");
-                        return;
-                }
+			if (runcgi(sockFd, uri, cgiDir) == -1) {
+					syslog(LOG_INFO, "Error running cgi : %m");
+					return;
+			}
         } else {
 
-                if (respond(dir, request, response) == -1) {
-                        syslog(LOG_INFO, "Error composing response : %m");
-                        return;
-                }
+			if (respond(dir, request, response) == -1) {
+					syslog(LOG_INFO, "Error composing response : %m");
+			//		return;
+			}
 
-                if (reply(sockFd, request, response) == -1) {
-                        syslog(LOG_INFO, "Error sending response: %m");
-                        return;
-                }
+			if (reply(sockFd, request, response) == -1) {
+					syslog(LOG_INFO, "Error sending response: %m");
+					return;
+			}
         }
 
         if (time(&timer) == -1) {

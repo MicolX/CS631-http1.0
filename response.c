@@ -150,6 +150,13 @@ reply(int socket, Request *req, Response *res) {
         ssize_t readsize;
         ssize_t writesize;
 
+		if (req->errcode != 0) {
+			snprintf(message, sizeof(message), "HTTP/1.0 %s\r\n", res->status);
+			if (write(socket, message, strlen(message)) != (signed int)strlen(message)) {
+				// log error
+				return -1;
+			}
+		}
 
         if (req->version == 1.0) {
                 if (res->dirindex == 0 && strcmp(res->status, "200 OK\r\n") == 0) {
