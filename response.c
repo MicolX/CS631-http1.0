@@ -6,18 +6,18 @@ const char* status[] = {
         "200 OK\r\n",						// 0
         "201 Created\r\n",					// 1
         "202 Accepted\r\n",					// 2
-        "204 No Content\r\n",				// 3
-        "301 Moved Permanently\r\n",		// 4
-        "302 Moved Temporarily\r\n",		// 5
-        "304 Not Modified\r\n",				// 6
-        "400 Bad Request\r\n",				// 7
-        "401 Unauthorized\r\n",				// 8
-        "403 Forbidden\r\n",				// 9
-        "404 Not Found\r\n",				// 10
-        "500 Internal Server Error\r\n",	// 11
-        "501 Not Implemented\r\n",			// 12
-        "502 Bad Gateway\r\n",				// 13
-        "503 Service Unavailable\r\n"		// 14
+        "204 No Content\r\n",				        // 3
+        "301 Moved Permanently\r\n",		                // 4
+        "302 Moved Temporarily\r\n",		                // 5
+        "304 Not Modified\r\n",				        // 6
+        "400 Bad Request\r\n",				        // 7
+        "401 Unauthorized\r\n",				        // 8
+        "403 Forbidden\r\n",				        // 9
+        "404 Not Found\r\n",				        // 10
+        "500 Internal Server Error\r\n",	                // 11
+        "501 Not Implemented\r\n",			        // 12
+        "502 Bad Gateway\r\n",				        // 13
+        "503 Service Unavailable\r\n"		                // 14
 };
 
 
@@ -47,11 +47,11 @@ respond(char *rootpath, Request *req, Response *res) {
         if (stat(uri, &sb) == -1) {
                 switch (errno) {
                         case EACCES:
-                                // log error
+                                syslog(LOG_INFO, "Error: EACCES stat on URI");
                                 res->status = status[9];
                                 break;
                         default:
-                                // log error
+                                syslog(LOG_INFO, "Error performing stat on URI");
                                 res->status = status[10];
                                 break;
                 }
@@ -78,12 +78,12 @@ respond(char *rootpath, Request *req, Response *res) {
                 strlcpy(req->uri, uri, MAXPATHLEN);
         }
 
-		if (stat(req->uri, &sb) == -1) {
-			// log error
-			return -1;
-		}
+        if (stat(req->uri, &sb) == -1) {
+                syslog(LOG_INFO, "Error: stat on URI");
+                return -1;
+        }
         
-		res->lastmtime = sb.st_mtime;
+        res->lastmtime = sb.st_mtime;
 
         if (strlen(req->ifms) > 0) {
                 if (strptime(req->ifms, "%a, %d %b %Y %T GMT", &ifmtime) == NULL) {
@@ -107,20 +107,20 @@ respond(char *rootpath, Request *req, Response *res) {
 
 
         if ((fd = open(req->uri, O_RDONLY)) < 0) {
-                // log error
+                syslog(LOG_INFO, "Error opening URI");
                 return -1;
         }
 
         res->contentlength = (long long)lseek(fd, 0, SEEK_END);
 
         if ((cookie = magic_open(MAGIC_MIME)) == NULL) {
-                // log error
+                syslog(LOG_INFO, "magic_open error");
                 (void)close(fd);
                 return -1;
         }
 
         if (magic_load(cookie, NULL) != 0) {
-                // log error
+                syslog(LOG_INFO, "magic_load error");
                 (void)magic_close(cookie);
                 (void)close(fd);
                 return -1;
@@ -173,7 +173,7 @@ reply(int socket, Request *req, Response *res) {
                 }
 
                 if (write(socket, message, strlen(message)) != (signed int)strlen(message)) {
-                        // log error
+                        syslog(LOG_INFO, "Error writing to socket");
                         return -1;
                 }
         }
@@ -190,7 +190,7 @@ reply(int socket, Request *req, Response *res) {
                 errno = 0;
                 while ((ent = fts_read(ftsp))) {
                         if (errno) {
-                                // log error
+                                syslog(LOG_INFO, "Error reading FTS");
                                 (void)fts_close(ftsp);
                                 return -1;
                         }
@@ -199,7 +199,7 @@ reply(int socket, Request *req, Response *res) {
                                 (void)snprintf(fname, sizeof(fname), "%s\n", ent->fts_name);
 
                                 if (write(socket, fname, strlen(fname)) != (int) strlen(fname)) {
-                                        // log error
+                                        syslog(LOG_INFO, "Error writing to socket on FTS");
                                         (void)fts_close(ftsp);
                                         return -1;
                                 }
@@ -211,13 +211,13 @@ reply(int socket, Request *req, Response *res) {
 
         if (req->method == GET) {
                 if ((fd = open(req->uri, O_RDONLY)) == -1) {
-                        // log error
+                        syslog(LOG_INFO, "Error opening GET URI");
                         return -1;
                 }
 
                 while ((readsize = read(fd, buf, sizeof(buf))) > 0) {
                         if ((writesize = write(socket, buf, readsize)) != readsize) {
-                                // log error
+                                syslog(LOG_INFO, "Error writing to socket on GET");
                                 (void)close(fd);
                                 return -1;
                         }
@@ -238,7 +238,7 @@ runcgi(int socket, char *uri, char *dir) {
         snprintf(fullpath, MAXPATHLEN, "%s/%s", dir, path);
 
         if ((pid = fork()) < 0) {
-                // log error
+                syslog(LOG_INFO, "Error forking");
                 return -1;
         } else if (pid == 0) {
 
@@ -246,19 +246,19 @@ runcgi(int socket, char *uri, char *dir) {
                         char *var;
                         while ((var = strsep(&uri, "&")) != NULL) {
                                 if (putenv(var) == -1) {
-                                        // log error
+                                        syslog(LOG_INFO, "Error modifying environment");
                                         return -1;
                                 }
                         }
                 }
 
                 if (dup2(socket, STDOUT_FILENO) < 0) {
-                        // log error
+                        syslog(LOG_INFO, "Error duping STDOUT_FILENO");
                         exit(EXIT_FAILURE);
                 }
 
                 if (dup2(socket, STDERR_FILENO) < 0) {
-                        // log error
+                        syslog(LOG_INFO, "Error duping STDERR_FILENO");
                         exit(EXIT_FAILURE);
                 }
 
@@ -281,7 +281,7 @@ userdirhandler(char *uri, char newuri[]) {
         uname = strsep(&uri, "/");
 
         if ((psw = getpwnam(uname)) == NULL) {
-                // log error
+                syslog(LOG_INFO, "Error on getpwnam()");
                 return -1;
         }
 
@@ -302,81 +302,3 @@ userdirhandler(char *uri, char newuri[]) {
         return 0;
 }
 
-
-//int
-//main(int argc, char **argv) {
-//        Response *res = (Response *)malloc(sizeof(Response));
-//        Request *req = (Request *)malloc(sizeof(Request));
-//        req->errcode = 0;
-//        char *rootdir = "/home/mingyao/sws";
-//        char *cgidir = "/home/mingyao/mid-term";
-//        char *cgiuri = strdup("/mxiong3/ls");
-//        int fd;
-//
-//        if (parse("GET /main HTTP/1.0\r\nIf-Modified-Since: Fri, 04 Dec 2010 18:40:37 GMT\r\n", req) == -1) {
-//                printf("parse failed\n");
-//                return 0;
-//        }
-//
-//        printf("========== request info ===========\n");
-//        if (req->method == GET) {
-//                printf("method = GET\n");
-//        } else if (req->method == HEAD) {
-//                printf("method = HEAD\n");
-//        } else {
-//                printf("method = UNSUPPORTED\n");
-//        }
-//        printf("uri = %s\n", req->uri);
-//        printf("version = %f\n", req->version);
-//        printf("if-modified-since = %s\n", req->ifms);
-//        printf("errcode = %d\n", req->errcode);
-//        printf("============= end of request info ============\n");
-//
-////	if (chroot(rootdir) < 0) {
-////		printf("chroot failed, error: %s\n", strerror(errno));
-////		exit(EXIT_FAILURE);
-////	}
-//
-////	if ((rootfd = open(rootdir, O_RDONLY|O_DIRECTORY)) == -1) {
-////		printf("open root dir failed, error: %s\n", strerror(errno));
-////		exit(EXIT_FAILURE);
-////	}
-//
-//        if (respond(rootdir, req, res) == -1) {
-//                printf("compose respond failed\n");
-//                exit(EXIT_FAILURE);
-//        }
-//
-//        printf("================ response info ==============\n");
-//        printf("status = %s\n", res->status);
-//        printf("last mtime = %s\n", ctime(&(res->lastmtime)));
-//        printf("content type = %s\n", res->contenttype);
-//        printf("content length = %lld\n", res->contentlength);
-//        printf("head only = %d\n", res->headonly);
-//        printf("dir index = %d\n", res->dirindex);
-//        printf("================ end of response info ==============\n");
-//
-//        fd = open("socket", O_WRONLY|O_CREAT|O_TRUNC, 0777);
-//
-//	if (reply(fd, req, res) == 0) {
-//		printf("reply successfully!!\n");
-//	} else {
-//		printf("reply failed\n");
-//	}
-//
-////        if (runcgi(fd, cgiuri, cgidir) == 0) {
-////                printf("cgi run succeed\n");
-////        } else {
-////                printf("cgi failed\n");
-////        }
-//
-//        char *uri = strdup("~mingyao/main/index.html");
-//        char new[MAXPATHLEN];
-//        if (userdirhandler(uri, new) == -1) {
-//                printf("handle failed\n");
-//        } else {
-//                printf("%s\n", new);
-//        }
-//
-//        exit(EXIT_SUCCESS);
-//}
