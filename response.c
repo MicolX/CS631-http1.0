@@ -42,7 +42,7 @@ respond(char *rootpath, Request *req, Response *res) {
         magic_t cookie;
         char uri[MAXPATHLEN];
 
-        snprintf(uri, sizeof(uri), "%s/%s", rootpath, req->uri);
+        snprintf(uri, sizeof(uri) + sizeof(rootpath) + 1, "%s/%s", rootpath, req->uri);
 
         if (stat(uri, &sb) == -1) {
                 switch (errno) {

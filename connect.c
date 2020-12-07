@@ -17,7 +17,7 @@ verifyIp(const char *str) {
 
 int
 openSocket() {
-        int sock, num;
+        int sock;
         void *s;
         socklen_t length, s_size;
         struct sockaddr_storage server;
@@ -73,14 +73,6 @@ openSocket() {
                 exit(EXIT_FAILURE);
         }
 
-        if (domain == PF_INET) {
-                struct sockaddr_in *s = (struct sockaddr_in *) &server;
-                num = ntohs(s->sin_port);
-        } else {
-                struct sockaddr_in6 *s = (struct sockaddr_in6 *) &server;
-                num = ntohs(s->sin6_port);
-        }
-        printf("Socket started on Port #%d", num);
 
         if (listen(sock, DEBUG_BACKLOG) < 0) {
                 syslog(LOG_INFO, "Error listening on socket: %m");
@@ -202,6 +194,11 @@ handleSocket(int sock) {
 
         const char *status = response->status;
         long long length = response->contentlength;
+
+	printf("rip: %s\n", rip);
+	printf("status: %s", status);
+	printf("length: %lld\n", length);
+
 
         if (writeLog(rip, gtime, strtok(buf, "\n"), status, length) == -1) {
                 syslog(LOG_INFO, "Error converting current time to GMT time: %m");

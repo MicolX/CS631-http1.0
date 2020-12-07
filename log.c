@@ -19,15 +19,23 @@ writeLog(const char *rip, struct tm *time, char *firstLine, const char *status, 
 //
 //                syslog(LOG_INFO, "Error converting content length to string");
 //                return -1;
-//        }
+//        i
 
-        char message[10000];     /* Extra to account for spaces and ' */
+	char *statusBuf = malloc(sizeof(status) - 1);
+	if (statusBuf == NULL) {
+		syslog(LOG_INFO, "Error allocating memory for status buffer");
+		return -1;
+	}
+
+	snprintf(statusBuf, strlen(statusBuf), "%s", status); 
+
+        char message[100000];     /* Extra to account for spaces and ' */
         if (message == NULL) {
                 syslog(LOG_INFO, "Error allocating memory for msg");
                 return -1;
         }
 
-        snprintf(message, 1000, "%s %s '%s' %s %d", rip, timeBuf, firstLine, statusBuf, contentLength);
+        snprintf(message, 10000, "%s %s '%s' %s %lld\n", rip, timeBuf, firstLine, statusBuf, contentLength);
 
 
         if (write(logFd, message, strlen(message)) < 0) {
