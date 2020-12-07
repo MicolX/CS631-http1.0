@@ -3,34 +3,108 @@
 
 
 int
-writeLog(Log *log)
+writeLog(const char *rip, struct tm *time, char *firstLine, const char *status, long long contentLength)
 {
         char timeBuf[TIME_STR_MAX];
+        snprintf(timeBuf, TIME_STR_MAX, "%d-%d-%dT%d:%d:%dZ", (time->tm_year + 1900), time->tm_mon, time->tm_mday, time->tm_hour, time->tm_min, time->tm_sec);
 
-        errno = 0;
-        if (strftime(timeBuf, strlen(timeBuf), "%Y-%m-%dT%H:%M:%SZ", log->time) == 0 && errno != 0) {
-                syslog(0, "Error creating logging time: %m");
+//	printf("starting\n");
+
+        char *contentBuf = malloc(sizeof(contentLength));
+        if (contentBuf == NULL) {
+                syslog(LOG_INFO, "Error allocating memory for content length - string cast");
                 return -1;
         }
 
-//	char *msg = malloc(strlen(log->remoteIp) + strlen(timeBuf) + strlen(log->firstLine) + strlen(log->status) + sizeof log->contentLength);
-	char msg[BUFSIZ];
-	if (msg == NULL) {
-                syslog(0, "Error allocating memory to log string: %m");
-                return -1;
-	}
+        if (snprintf(contentBuf, strlen(contentBuf), "%lld", contentLength) < 0) { /* Gets rid of newline char */
 
-        if (snprintf(msg, strlen(msg), "%s %s '%s' %s %d\n", log->remoteIp, timeBuf, log->firstLine, log->status, log->contentLength) < 0) {
-                syslog(0, "Error formatting log string: %m");
+                syslog(LOG_INFO, "Error converting content length to string");
                 return -1;
         }
 
-        int written = write(logFd, msg, strlen(msg));
-        if (written < 0){
-                syslog(0, "Error writing log message: %m");
+//        char message[10000];     /* Extra to account for spaces and ' */
+//        if (message == NULL) {
+//                syslog(LOG_INFO, "Error allocating memory for msg");
+//                return -1;
+//        }
+
+//	printf("hello there\n");
+
+//        snprintf(message, 1000, "%s %s '%s' %s %d", rip, timeBuf, firstLine, statusBuf, contentLength);
+
+
+//        if (write(logFd, message, strlen(message)) < 0) {
+//                perror("write");
+//		syslog(LOG_INFO, "Error writing message");
+//                return -1;
+//        }
+
+
+        if (write(logFd, rip, strlen(rip)) < 0) {
+                perror("Error writing IP to log");
+                syslog(LOG_INFO, "Error writing IP to log");
                 return -1;
         }
 
-//        free(msg);
+        if (write(logFd, " ", 1) < 0) {
+                perror("Error writing space to log");
+                syslog(LOG_INFO, "Error writing space to log");
+                return -1;
+        }
+
+        if (write(logFd, timeBuf, strlen(timeBuf)) < 0) {
+                perror("Error writing time to log");
+                syslog(LOG_INFO, "Error writing time to log");
+                return -1;
+        }
+
+        if (write(logFd, "'", 1) < 0) {
+                perror("Error writing open quote to log");
+                syslog(LOG_INFO, "Error writing open quote to log");
+                return -1;
+        }
+
+        if (write(logFd, firstLine, strlen(firstLine)) < 0) {
+                perror("Error writing first line to log");
+                syslog(LOG_INFO, "Error writing first line to log");
+                return -1;
+        }
+
+        if (write(logFd, "'", 1) < 0) {
+                perror("Error writing close quote to log");
+                syslog(LOG_INFO, "Error writing close quote to log");
+                return -1;
+        }
+
+        if (write(logFd, " ", 1) < 0) {
+                perror("Error writing space to log");
+                syslog(LOG_INFO, "Error writing space to log");
+                return -1;
+        }
+
+        if (write(logFd, status, strlen(status) - 1) < 0) {
+                perror("Error writing status to log");
+                syslog(LOG_INFO, "Error writing status to log");
+                return -1;
+        }
+
+        if (write(logFd, " ", 1) < 0) {
+                perror("Error writing space to log");
+                syslog(LOG_INFO, "Error writing space to log");
+                return -1;
+        }
+
+        if (write(logFd, contentBuf, strlen(contentBuf)) < 0) {
+                perror("Error writing content length to log");
+                syslog(LOG_INFO, "Error writing content length to log");
+                return -1;
+        }
+
+        if (write(logFd, "\n", 1) < 0) {
+                perror("Error writing new line to log");
+                syslog(LOG_INFO, "Error writing new line to log");
+                return -1;
+        }
+
         return 0;
 }
