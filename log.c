@@ -40,7 +40,7 @@ writeLog(const char *rip, struct tm *time, char *firstLine, const char *status, 
                 return -1;
         }
 
-        if (write(logFd, firstLine, strlen(firstLine) - 2) < 0) {
+        if (write(logFd, firstLine, strlen(firstLine) - 1) < 0) {
                 syslog(LOG_INFO, "Error writing first line to log");
                 return -1;
         }
