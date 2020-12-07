@@ -85,7 +85,7 @@ openSocket() {
 
 void
 handleSocket(int sock) {
-        int sockFd, rval, valid = 0;
+        int sockFd, rval;
         socklen_t size;
         socklen_t len;
         time_t timer;
@@ -155,29 +155,27 @@ handleSocket(int sock) {
         }
 
         if ((gtime = gmtime(&timer)) == NULL) {
-                syslog(LOG_INFO, "Error converting current time to GMT time");
-                return;
+			syslog(LOG_INFO, "Error converting current time to GMT time");
+			return;
         }
 
         if (parse(buf, request) == -1) {
-                syslog(LOG_INFO, "Error parsing response");
-
-                valid = 1;
+			syslog(LOG_INFO, "Error parsing response");
         }
 
         if (strchr(request->uri, (int)'~') != NULL) {
-                char *old = strdup(request->uri);
-                if (userdirhandler(old, request->uri) == -1) {
-                        syslog(LOG_INFO, "Error fetching home directory");
-                        return;
-                }
+			request->hastilde = 1;
+			char *old = strdup(request->uri);
+			if (userdirhandler(old, request->uri) == -1) {
+					syslog(LOG_INFO, "Error fetching home directory");
+					return;
+			}
         }
 
         if (strncmp(request->uri, CGIPREFIX, strlen(CGIPREFIX)) == 0 && c_opt == 1) {
-                char *uri = request->uri;
-                (void)strsep(&uri, "n");
+			char *uri = request->uri;
+			(void)strsep(&uri, "n");
 
-<<<<<<< HEAD
 			if (runcgi(sockFd, uri, cgiDir) == -1) {
 					syslog(LOG_INFO, "Error running cgi : %m");
 					return;
@@ -199,12 +197,6 @@ handleSocket(int sock) {
                 syslog(LOG_INFO, "Error getting current time: %m");
                 return;
         }
-
-		if (reply(sockFd, request, response) == -1) {
-				syslog(LOG_INFO, "Error sending response");
-				return;
-		}
-      
 
         if (writeLog(rip, gtime, strtok(buf, "\n"), response->status, response->contentlength) == -1) {
                 syslog(LOG_INFO, "Error converting current time to GMT time");

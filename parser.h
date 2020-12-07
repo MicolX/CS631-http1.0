@@ -22,6 +22,7 @@ typedef struct request_t {
         float version;
         char ifms[MAX_TIME];
         int errcode;
+		int hastilde;
 } Request;
 
 int parse(char *, Request *);

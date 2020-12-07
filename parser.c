@@ -51,7 +51,9 @@ getrline(char *p, const char *end, Request *req)
                 req->version = 1.0;
         } else if (strncmp(p, VERSION09, 8) == 0) {
                 req->version = 0.9;
-        } else {
+        } else if (strlen(p) == 2 && strncmp(p, "\r\n", 2)) {
+				req->version = 0.9;
+		} else {
                 req->errcode = 400;
                 return -1;
         }

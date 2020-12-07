@@ -42,7 +42,11 @@ respond(char *rootpath, Request *req, Response *res) {
         magic_t cookie;
         char uri[MAXPATHLEN];
 
-        snprintf(uri, MAXPATHLEN, "%s/%s", rootpath, req->uri);
+		if (req->hastilde == 1) {
+			(void)strncpy(uri, req->uri, MAXPATHLEN);
+		} else {
+        	snprintf(uri, MAXPATHLEN, "%s/%s", rootpath, req->uri);
+		}
 
         if (stat(uri, &sb) == -1) {
                 switch (errno) {
@@ -59,6 +63,8 @@ respond(char *rootpath, Request *req, Response *res) {
                 return 0;
         }
 
+		res->status = status[0];
+
         if (S_ISDIR(sb.st_mode)) {
                 char htmlpath[MAXPATHLEN];
 
@@ -66,7 +72,6 @@ respond(char *rootpath, Request *req, Response *res) {
 
                 if (access(htmlpath, F_OK) != 0) {
                         res->dirindex = 1;
-                        res->status = status[10];
                         strlcpy(req->uri, uri, MAXPATHLEN);
                         return 0;
                 } else {
@@ -156,7 +161,9 @@ reply(int socket, Request *req, Response *res) {
 				// log error
 				return -1;
 			}
+			return 0;
 		}
+			
 
         if (req->version == 1.0) {
                 if (res->dirindex == 0 && strcmp(res->status, "200 OK\r\n") == 0) {
@@ -178,7 +185,7 @@ reply(int socket, Request *req, Response *res) {
                 } else {
                         snprintf(message, sizeof(message), "HTTP/1.0 %s\r\n", res->status);
                 }
-
+				
                 if (write(socket, message, strlen(message)) != (signed int)strlen(message)) {
                         syslog(LOG_INFO, "Error writing to socket");
                         return -1;
@@ -186,7 +193,7 @@ reply(int socket, Request *req, Response *res) {
         }
 
 
-        if (res->dirindex == 1) {
+        if (res->dirindex == 1 && req->method == GET) {
                 FTSENT *ent;
                 FTS *ftsp;
                 char *dir[2];
