@@ -198,8 +198,7 @@ handleSocket(int sock) {
 	printf("rip: %s\n", rip);
 	printf("status: %s", status);
 	printf("length: %lld\n", length);
-
-
+	
         if (writeLog(rip, gtime, strtok(buf, "\n"), status, length) == -1) {
                 syslog(LOG_INFO, "Error converting current time to GMT time: %m");
                 return;
