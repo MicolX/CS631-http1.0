@@ -1,6 +1,6 @@
 #include "sws.h"
 
-int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd, port = 8080, ipv = 6, rootfd;      
+int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd = STDOUT_FILENO, port = 8080, ipv = 6, rootfd;      
 char *dir, *cgiDir, *addr, *file, *ipAddr;
 
 
