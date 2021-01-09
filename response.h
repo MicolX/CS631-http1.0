@@ -28,9 +28,10 @@ typedef struct response_t {
         int dirindex;
 } Response;
 
-#endif
 
 int respond(char *, Request *, Response *);
 int reply(int, Request *, Response *);
 int runcgi(int, char *, char *);
 int userdirhandler(char *, char[]);
+
+#endif
