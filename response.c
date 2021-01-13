@@ -311,7 +311,9 @@ runcgi(int socket, char *uri, char *dir) {
 
                 char command[MAXPATHLEN];
                 snprintf(command, MAXPATHLEN, "%s", fullpath);
-                execl("/bin/sh", "sh", "-c", command, (char*) 0);
+                // execl("/bin/sh", "sh", "-c", command, (char*) 0);
+                execl(command, (char*) 0);
+
                 return -1;
         }
 
