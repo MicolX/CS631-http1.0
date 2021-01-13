@@ -11,24 +11,39 @@
 
 #include "response.h"
 
-#define MESSAGESIZE 256
+#define MESSAGESIZE     256
+#define OK              0
+#define CREATED         1
+#define ACCEPT          2
+#define NO_CONTENT      3
+#define MOVED_PERM      4
+#define MOVED_TEMP      5
+#define NOT_MODIFIED    6
+#define BAD_REQUEST     7
+#define UNAUTHORIZED    8
+#define FORBIDDEN       9
+#define NOT_FOUND       10
+#define INTERNAL_ERR    11
+#define NOT_IMP         12
+#define BAD_GATEWAY     13
+#define UNAVAILABLE     14
 
 const char* status[] = {
-        "200 OK\r\n",						// 0
-        "201 Created\r\n",					// 1
-        "202 Accepted\r\n",					// 2
-        "204 No Content\r\n",				        // 3
-        "301 Moved Permanently\r\n",		                // 4
-        "302 Moved Temporarily\r\n",		                // 5
-        "304 Not Modified\r\n",				        // 6
-        "400 Bad Request\r\n",				        // 7
-        "401 Unauthorized\r\n",				        // 8
-        "403 Forbidden\r\n",				        // 9
-        "404 Not Found\r\n",				        // 10
-        "500 Internal Server Error\r\n",	                // 11
-        "501 Not Implemented\r\n",			        // 12
-        "502 Bad Gateway\r\n",				        // 13
-        "503 Service Unavailable\r\n"		                // 14
+        "200 OK\r\n",						
+        "201 Created\r\n",					
+        "202 Accepted\r\n",					
+        "204 No Content\r\n",				        
+        "301 Moved Permanently\r\n",		                
+        "302 Moved Temporarily\r\n",		                
+        "304 Not Modified\r\n",				        
+        "400 Bad Request\r\n",				        
+        "401 Unauthorized\r\n",				        
+        "403 Forbidden\r\n",				      
+        "404 Not Found\r\n",				        
+        "500 Internal Server Error\r\n",	               
+        "501 Not Implemented\r\n",			        
+        "502 Bad Gateway\r\n",				        
+        "503 Service Unavailable\r\n"		               
 };
 
 
@@ -40,10 +55,10 @@ respond(char *rootpath, Request *req, Response *res) {
         if (req->errcode != 0) {
                 switch (req->errcode) {
                         case 400:
-                                res->status = status[7];
+                                res->status = status[BAD_REQUEST];
                                 break;
                         case 501:
-                                res->status = status[12];
+                                res->status = status[NOT_IMP];
                                 break;
                 }
                 res->headonly = 1;
@@ -66,18 +81,18 @@ respond(char *rootpath, Request *req, Response *res) {
                 switch (errno) {
                         case EACCES:
                                 syslog(LOG_INFO, "Error: EACCES stat on URI");
-                                res->status = status[9];
+                                res->status = status[FORBIDDEN];
                                 break;
                         default:
                                 syslog(LOG_INFO, "Error performing stat on URI");
-                                res->status = status[10];
+                                res->status = status[NOT_FOUND];
                                 break;
                 }
                 res->headonly = 1;
                 return 0;
         }
 
-		res->status = status[0];
+		res->status = status[OK];
 
         if (S_ISDIR(sb.st_mode)) {
                 char htmlpath[MAXPATHLEN];
@@ -108,7 +123,7 @@ respond(char *rootpath, Request *req, Response *res) {
                 if (strptime(req->ifms, "%a, %d %b %Y %T GMT", &ifmtime) == NULL) {
                         if (strptime(req->ifms, "%a, %d-%b-%Y %T GMT", &ifmtime) == NULL) {
                                 if (strptime(req->ifms, "%a %b  %d %T %Y", &ifmtime) == NULL) {
-                                        res->status = status[7];
+                                        res->status = status[BAD_REQUEST];
                                         res->headonly = 1;
                                         return 0;
                                 }
@@ -118,7 +133,7 @@ respond(char *rootpath, Request *req, Response *res) {
                 if (difftime(sb.st_mtime, mktime(&ifmtime)) > 0) {
                         res->headonly = 0;
                 } else {
-                        res->status = status[6];
+                        res->status = status[NOT_MODIFIED];
                         res->headonly = 1;
                         return 0;
                 }
@@ -130,7 +145,7 @@ respond(char *rootpath, Request *req, Response *res) {
                 return -1;
         }
 
-        res->contentlength = (long long)lseek(fd, 0, SEEK_END);
+        res->contentlength = (long long)sb.st_size;
 
         if ((cookie = magic_open(MAGIC_MIME)) == NULL) {
                 syslog(LOG_INFO, "magic_open error");
@@ -146,7 +161,7 @@ respond(char *rootpath, Request *req, Response *res) {
         }
 
         res->contenttype = magic_descriptor(cookie, fd);
-        res->status = status[0];
+        res->status = status[OK];
         if (req->method == HEAD) {
                 res->headonly = 1;
         }
