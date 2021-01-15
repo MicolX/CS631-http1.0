@@ -12,7 +12,7 @@
 
 #include "sws.h"
 
-int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd = STDOUT_FILENO, port = 8080, ipv = 6, rootfd;
+int c_opt, d_opt, h_opt, i_opt, l_opt, p_opt, logFd = STDOUT_FILENO, port = 8080, ipv = 6;
 char *dir, *cgiDir, *addr, *file, *ipAddr;
 
 int main(int, char **);
@@ -20,8 +20,7 @@ int main(int, char **);
 /*
  * Determines if a directory pathing is valid/
  */
-int 
-testDir(char *dir)
+int testDir(char *dir)
 {
 	DIR *dirTest;
 	dirTest = opendir(dir);
@@ -40,10 +39,10 @@ testDir(char *dir)
 /*
  * Parses and validations options. Starts the server depending on the input instructions.
  */
-int 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	char opt;
+	ipAddr = NULL;
 
 	while ((opt = getopt(argc, argv, "c:dhi:l:p:")) != -1)
 	{
@@ -70,6 +69,7 @@ main(int argc, char **argv)
 				fprintf(stderr, "%s: invalid IP Address '%s'\n", argv[0], optarg);
 				exit(EXIT_FAILURE);
 			}
+			ipAddr = strdup(optarg);
 			i_opt = 1;
 			break;
 
@@ -97,7 +97,8 @@ main(int argc, char **argv)
 				exit(EXIT_FAILURE);
 			}
 
-			if (port < 1024 || port > 49151) {
+			if (port < 1024 || port > 49151)
+			{
 				fprintf(stderr, "Invalid port number, can only between 1024~49151.\n");
 				exit(EXIT_FAILURE);
 			}
@@ -114,12 +115,14 @@ main(int argc, char **argv)
 	dir = argv[optind];
 
 	if (dir == NULL)
-	{ /* Assume this current directory */
+	{
+		/* Assume this current directory */
 		dir = ".";
 	}
 
 	if ((d_opt == 0) && (l_opt == 0))
-	{ /* No logging, redirect logFd to /dev/null */
+	{
+		/* No logging, redirect logFd to /dev/null */
 		if ((logFd = open("/dev/null", O_WRONLY)) == -1)
 		{
 			perror("redirect log to /dev/null");
@@ -128,7 +131,8 @@ main(int argc, char **argv)
 	}
 
 	if (testDir(dir) != EXIT_SUCCESS)
-	{ /* Checking dir right before the networking code starts (moved from in opt loop) */
+	{
+		/* Checking dir right before the networking code starts (moved from in opt loop) */
 		exit(EXIT_FAILURE);
 	}
 

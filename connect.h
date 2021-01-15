@@ -7,6 +7,7 @@
 #include <sys/wait.h>
 
 #include <arpa/inet.h>
+#include <err.h>
 #include <netinet/in.h>
 #include <netdb.h>
 
