@@ -59,14 +59,14 @@ openSocket(void)
                 struct sockaddr_in *sin = (struct sockaddr_in *) &server;
                 sin->sin_family = PF_INET;
                 sin->sin_addr.s_addr = INADDR_ANY;
-                sin->sin_port = port;
+                sin->sin_port = htons(port);
                 s = sin;
                 s_size = sizeof(*sin);
         } else {
                 struct sockaddr_in6 *sin = (struct sockaddr_in6 *) &server;
                 sin->sin6_family = PF_INET6;
                 sin->sin6_addr = in6addr_any;
-                sin->sin6_port = port;
+                sin->sin6_port = htons(port);
                 s = sin;
                 s_size = sizeof(*sin);
 
@@ -90,6 +90,9 @@ openSocket(void)
                 exit(EXIT_FAILURE);
         }
 
+        if (d_opt == 1) {
+                printf("Listening on port #%d.\n", port);
+        }
 
         if (listen(sock, DEBUG_BACKLOG) < 0) {
                 syslog(LOG_INFO, "Error listening on socket");

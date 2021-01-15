@@ -186,13 +186,13 @@ reply(int socket, Request *req, Response *res) {
         ssize_t readsize;
         ssize_t writesize;
 
-		if (req->errcode != 0) {
-			snprintf(message, sizeof(message), "HTTP/1.0 %s\r\n", res->status);
-			if (write(socket, message, strlen(message)) != (signed int)strlen(message)) {
-				return -1;
-			}
-			return 0;
-		}
+        if (req->errcode != 0) {
+                snprintf(message, sizeof(message), "HTTP/1.0 %s\r\n", res->status);
+                if (write(socket, message, strlen(message)) != (signed int)strlen(message)) {
+                        return -1;
+                }
+                return 0;
+        }
 			
 
         if (req->version == 1.0) {
@@ -312,7 +312,7 @@ runcgi(int socket, char *uri, char *dir) {
                 char command[MAXPATHLEN];
                 snprintf(command, MAXPATHLEN, "%s", fullpath);
                 // execl("/bin/sh", "sh", "-c", command, (char*) 0);
-                execl(command, (char*) 0);
+                execl(command, "", (char*) 0);
 
                 return -1;
         }
