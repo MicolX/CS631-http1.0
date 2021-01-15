@@ -48,8 +48,7 @@ const char *status[] = {
 /*
  * Uses request data to build, if applicable, the appropriate response.
  */
-int 
-respond(char *rootpath, Request *req, Response *res)
+int respond(char *rootpath, Request *req, Response *res)
 {
 	if (req->errcode != 0)
 	{
@@ -191,8 +190,7 @@ respond(char *rootpath, Request *req, Response *res)
 	return 0;
 }
 
-int
-(compar)(const FTSENT **a, const FTSENT **b)
+int(compar)(const FTSENT **a, const FTSENT **b)
 {
 	return strcmp((*a)->fts_name, (*b)->fts_name);
 }
@@ -200,8 +198,7 @@ int
 /*
  * Sends the response (including file transversal work, if applicable) back the client.
  */
-int 
-reply(int socket, Request *req, Response *res)
+int reply(int socket, Request *req, Response *res)
 {
 	char message[MESSAGESIZE];
 	char buf[BUFSIZ];
@@ -312,8 +309,7 @@ reply(int socket, Request *req, Response *res)
 /*
  * Executes any CGI requests.
  */
-int 
-runcgi(int socket, char *uri, char *dir)
+int runcgi(int socket, char *uri, char *dir)
 {
 	char *path, fullpath[MAXPATHLEN];
 	pid_t pid;
@@ -369,8 +365,7 @@ runcgi(int socket, char *uri, char *dir)
 /*
  * Handles directory pathing based on the presence of a user directory.
  */
-int 
-userdirhandler(char *uri, char newuri[])
+int userdirhandler(char *uri, char newuri[])
 {
 	char *before, *uname;
 	struct passwd *psw;
