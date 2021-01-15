@@ -43,7 +43,6 @@ testDir(char *dir)
 int 
 main(int argc, char **argv)
 {
-	char *temp = NULL;
 	char opt;
 
 	while ((opt = getopt(argc, argv, "c:dhi:l:p:")) != -1)
@@ -101,7 +100,7 @@ main(int argc, char **argv)
 			if (port < 1024 || port > 49151) {
 				fprintf(stderr, "Invalid port number, can only between 1024~49151.\n");
 			}
-			
+
 			p_opt = 1;
 			break;
 
