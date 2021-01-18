@@ -58,7 +58,7 @@ int openSocket(void)
 	{
 		if (d_opt)
 		{
-			perror("Error creating IPv%d socket", ipv);
+			fprintf(stderr, "Error creating IPv%d socket", ipv);
 		}
 		syslog(LOG_ERR, "Error creating IPv%d socket", ipv);
 		exit(EXIT_FAILURE);
