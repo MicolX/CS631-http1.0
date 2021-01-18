@@ -56,7 +56,11 @@ int openSocket(void)
 
 	if ((sock = socket(domain, SOCK_STREAM, 0)) < 0)
 	{
-		syslog(LOG_INFO, "Error creating IPv%d socket", ipv);
+		if (d_opt)
+		{
+			perror("Error creating IPv%d socket", ipv);
+		}
+		syslog(LOG_ERR, "Error creating IPv%d socket", ipv);
 		exit(EXIT_FAILURE);
 	}
 
@@ -93,7 +97,11 @@ int openSocket(void)
 			int off = 0;
 			if (setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&off, sizeof(off)) < 0)
 			{
-				syslog(LOG_INFO, "Error setting socket option for both IPv values");
+				if (d_opt)
+				{
+					perror("Error setting socket option for both IPv values");
+				}
+				syslog(LOG_ERR, "Error setting socket option for both IPv values");
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -101,14 +109,22 @@ int openSocket(void)
 
 	if (bind(sock, (struct sockaddr *)s, s_size) != 0)
 	{
-		syslog(LOG_INFO, "Error binding socket");
+		if (d_opt)
+		{
+			perror("Error binding socket");
+		}
+		syslog(LOG_ERR, "Error binding socket");
 		exit(EXIT_FAILURE);
 	}
 
 	length = sizeof(server);
 	if (getsockname(sock, (struct sockaddr *)&server, &length) != 0)
 	{
-		syslog(LOG_INFO, "Error getting socket name");
+		if (d_opt)
+		{
+			perror("Error getting socket name");
+		}
+		syslog(LOG_ERR, "Error getting socket name");
 		exit(EXIT_FAILURE);
 	}
 
@@ -119,7 +135,11 @@ int openSocket(void)
 
 	if (listen(sock, DEBUG_BACKLOG) < 0)
 	{
-		syslog(LOG_INFO, "Error listening on socket");
+		if (d_opt)
+		{
+			perror("Error listening on socket");
+		}
+		syslog(LOG_ERR, "Error listening on socket");
 		exit(EXIT_FAILURE);
 	}
 
@@ -150,20 +170,32 @@ void handleSocket(int sock)
 
 	if (request == NULL)
 	{
-		syslog(LOG_INFO, "Error allocating memory to request structure");
+		if (d_opt)
+		{
+			perror("Error allocating memory to request structure");
+		}
+		syslog(LOG_ERR, "Error allocating memory to request structure");
 		exit(EXIT_FAILURE);
 	}
 
 	if (response == NULL)
 	{
-		syslog(LOG_INFO, "Error allocating memory to response structure");
+		if (d_opt)
+		{
+			perror("Error allocating memory to response structure");
+		}
+		syslog(LOG_ERR, "Error allocating memory to response structure");
 		exit(EXIT_FAILURE);
 	}
 
 	size = sizeof(client);
 	if ((sockFd = accept(sock, (struct sockaddr *)&client, &size)) < 0)
 	{
-		syslog(LOG_INFO, "Error accepting connection on socket");
+		if (d_opt)
+		{
+			perror("Error accepting connection on socket");
+		}
+		syslog(LOG_ERR, "Error accepting connection on socket");
 		exit(EXIT_FAILURE);
 	}
 
@@ -172,7 +204,11 @@ void handleSocket(int sock)
 	bzero(buf, sizeof(buf));
 	if ((rval = read(sockFd, buf, BUFSIZ)) < 0)
 	{
-		syslog(LOG_INFO, "Error reading socket");
+		if (d_opt)
+		{
+			perror("Error reading socket");
+		}
+		syslog(LOG_ERR, "Error reading socket");
 		return;
 	}
 
@@ -184,7 +220,11 @@ void handleSocket(int sock)
 	len = sizeof(addr);
 	if (getpeername(sockFd, (struct sockaddr *)&addr, &len) < 0)
 	{
-		syslog(LOG_INFO, "Error getting peer name");
+		if (d_opt)
+		{
+			perror("Error getting peer name");
+		}
+		syslog(LOG_ERR, "Error getting peer name");
 		return;
 	}
 
@@ -203,25 +243,41 @@ void handleSocket(int sock)
 
 	if (rip == NULL)
 	{
-		syslog(LOG_INFO, "inet_ntop error");
+		if (d_opt)
+		{
+			perror("inet_ntop error");
+		}
+		syslog(LOG_ERR, "inet_ntop error");
 		rip = "unknown";
 	}
 
 	if (time(&timer) == -1)
 	{
-		syslog(LOG_INFO, "Error getting current time");
+		if (d_opt)
+		{
+			perror("Error getting current time");
+		}
+		syslog(LOG_ERR, "Error getting current time");
 		return;
 	}
 
 	if ((gtime = gmtime(&timer)) == NULL)
 	{
-		syslog(LOG_INFO, "Error converting current time to GMT time");
+		if (d_opt)
+		{
+			perror("Error converting current time to GMT time");
+		}
+		syslog(LOG_ERR, "Error converting current time to GMT time");
 		return;
 	}
 
 	if (parse(buf, request) == -1)
 	{
-		syslog(LOG_INFO, "Error parsing response");
+		if (d_opt)
+		{
+			perror("Error parsing response");
+		}
+		syslog(LOG_ERR, "Error parsing response");
 	}
 
 	if (strchr(request->uri, (int)'~') != NULL)
@@ -230,7 +286,11 @@ void handleSocket(int sock)
 		char *old = strdup(request->uri);
 		if (userdirhandler(old, request->uri) == -1)
 		{
-			syslog(LOG_INFO, "Error fetching home directory");
+			if (d_opt)
+			{
+				perror("Error fetching home directory");
+			}
+			syslog(LOG_ERR, "Error fetching home directory");
 			return;
 		}
 	}
@@ -242,29 +302,49 @@ void handleSocket(int sock)
 
 		if (runcgi(sockFd, uri, cgiDir) == -1)
 		{
-			syslog(LOG_INFO, "Error running cgi");
+			if (d_opt)
+			{
+				perror("Error running cgi");
+			}
+			syslog(LOG_ERR, "Error running cgi");
 		}
 	}
 	else
 	{
 		if (respond(dir, request, response) == -1)
 		{
-			syslog(LOG_INFO, "Error composing response");
+			if (d_opt)
+			{
+				perror("Error composing response");
+			}
+			syslog(LOG_ERR, "Error composing response");
 		}
 
 		if (reply(sockFd, request, response) == -1)
 		{
-			syslog(LOG_INFO, "Error sending response");
+			if (d_opt)
+			{
+				perror("Error sending response");
+			}
+			syslog(LOG_ERR, "Error sending response");
 		}
 	}
 
 	if (time(&timer) == -1)
 	{
+		if (d_opt)
+		{
+			perror("Error getting current time");
+		}
 		syslog(LOG_INFO, "Error getting current time");
 	}
 
 	if (writeLog(rip, gtime, strtok(buf, "\n"), response->status, response->contentlength) == -1)
 	{
+		if (d_opt)
+		{
+			perror("Error converting current time to GMT time");
+		}
 		syslog(LOG_INFO, "Error converting current time to GMT time");
 	}
 
@@ -299,6 +379,10 @@ void startServer(void)
 			to.tv_usec = 0;
 			if (select(socket + 1, &ready, 0, 0, &to) < 0)
 			{
+				if (d_opt)
+				{
+					perror("Error selecting socket");
+				}
 				syslog(LOG_INFO, "Error selecting socket");
 				continue;
 			}
