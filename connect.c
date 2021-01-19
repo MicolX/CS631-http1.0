@@ -135,7 +135,13 @@ int openSocket(void)
 		printf("Listening on port #%d.\n", port);
 	}
 
-	
+	if (d_opt == 0)
+	{
+		if (daemon(1, 0) == -1)
+		{
+			err(EXIT_FAILURE, "Failed to daemonize: %s\n", strerror(errno));
+		}
+	}
 
 	return sock;
 }
