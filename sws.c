@@ -151,6 +151,15 @@ int main(int argc, char **argv)
 
 	openlog(argv[0], LOG_PID, 0); /* Opens system logging to track server errors */
 
+	if (d_opt == 0)
+	{
+		if (daemon(0, 1) == -1)
+		{
+			perror("daemon");
+			exit(EXIT_FAILURE);
+		}
+	}
+
 	startServer();
 
 	return EXIT_SUCCESS;

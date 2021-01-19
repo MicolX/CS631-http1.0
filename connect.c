@@ -135,14 +135,7 @@ int openSocket(void)
 		printf("Listening on port #%d.\n", port);
 	}
 
-	if (d_opt == 0)
-	{
-		if (daemon(0, 1) == -1)
-		{
-			perror("daemon");
-			exit(EXIT_FAILURE);
-		}
-	}
+	
 
 	return sock;
 }
