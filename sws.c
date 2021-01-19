@@ -153,10 +153,9 @@ int main(int argc, char **argv)
 
 	if (d_opt == 0)
 	{
-		if (daemon(0, 1) == -1)
+		if (daemon(1, 0) == -1)
 		{
-			perror("daemon");
-			exit(EXIT_FAILURE);
+			err(EXIT_FAILURE, "Failed to daemonize: %s\n", strerror(errno));
 		}
 	}
 
