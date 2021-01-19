@@ -22,6 +22,7 @@ int main(int, char **);
  */
 int testDir(char *dir)
 {
+	errno = 0;
 	DIR *dirTest;
 	dirTest = opendir(dir);
 	if (dirTest)
@@ -31,7 +32,7 @@ int testDir(char *dir)
 	}
 	else
 	{
-		fprintf(stderr, "invalid directory '%s'\n", dir);
+		fprintf(stderr, "Failed to open '%s': %s\n", dir, strerror(errno));
 		return EXIT_FAILURE;
 	}
 }
@@ -49,6 +50,10 @@ int main(int argc, char **argv)
 		switch (opt)
 		{
 		case 'c':
+			if (testDir(optarg) != EXIT_SUCCESS)
+			{
+				err(EXIT_FAILURE, "Failed to open CGI directory");
+			}
 			cgiDir = optarg;
 			c_opt = 1;
 			break;
