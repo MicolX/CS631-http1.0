@@ -28,12 +28,11 @@ int testDir(char *dir)
 	if (dirTest)
 	{
 		closedir(dirTest);
-		return EXIT_SUCCESS;
+		return 0;
 	}
 	else
 	{
-		fprintf(stderr, "Failed to open '%s': %s\n", dir, strerror(errno));
-		return EXIT_FAILURE;
+		return -1;
 	}
 }
 
@@ -50,7 +49,7 @@ int main(int argc, char **argv)
 		switch (opt)
 		{
 		case 'c':
-			if (testDir(optarg) != EXIT_SUCCESS)
+			if (testDir(optarg) != 0)
 			{
 				err(EXIT_FAILURE, "Failed to open CGI directory");
 			}
@@ -68,8 +67,7 @@ int main(int argc, char **argv)
 			exit(EXIT_SUCCESS);
 
 		case 'i':
-			ipv = verifyIp(optarg);
-			if (ipv == -1)
+			if ((ipv = verifyIp(optarg)) == -1)
 			{
 				fprintf(stderr, "%s: invalid IP Address '%s'\n", argv[0], optarg);
 				exit(EXIT_FAILURE);
@@ -135,16 +133,15 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (testDir(dir) != EXIT_SUCCESS)
+	if (testDir(dir) != 0)
 	{
 		/* Checking dir right before the networking code starts (moved from in opt loop) */
-		exit(EXIT_FAILURE);
+		err(EXIT_FAILURE, "Failed to open root directory: %s\n", strerror(errno));
 	}
 
 	if (chdir(dir) != 0)
 	{
-		perror("chdir");
-		exit(EXIT_FAILURE);
+		err(EXIT_FAILURE, "Failed to chdir: %s\n", strerror(errno));
 	}
 
 	//	if (chroot(dir) != 0) {
@@ -153,15 +150,6 @@ int main(int argc, char **argv)
 	//	}
 
 	openlog(argv[0], LOG_PID, 0); /* Opens system logging to track server errors */
-
-	if (d_opt == 0)
-	{
-		if (daemon(0, 1) == -1)
-		{
-			perror("daemon");
-			exit(EXIT_FAILURE);
-		}
-	}
 
 	startServer();
 

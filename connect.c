@@ -55,12 +55,9 @@ int openSocket(void)
 	}
 
 	if ((sock = socket(domain, SOCK_STREAM, 0)) < 0)
-	{
-		if (d_opt)
-		{
-			fprintf(stderr, "Error creating IPv%d socket", ipv);
-		}
-		syslog(LOG_ERR, "Error creating IPv%d socket", ipv);
+	{		
+		fprintf(stderr, "Error creating IPv%d socket", ipv);
+		// syslog(LOG_ERR, "Error creating IPv%d socket", ipv);
 		exit(EXIT_FAILURE);
 	}
 
@@ -79,10 +76,9 @@ int openSocket(void)
 		sin->sin6_family = PF_INET6;
 		if (ipAddr)
 		{
-			if (inet_pton(AF_INET6, ipAddr, &(sin->sin6_addr)) != 1)
-			{
-				err(EXIT_FAILURE, "Invalid IPv6 address.\n");
-			}
+			
+			err(EXIT_FAILURE, "Invalid IPv6 address.\n");
+			
 		}
 		else
 		{
@@ -96,24 +92,20 @@ int openSocket(void)
 		{
 			int off = 0;
 			if (setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&off, sizeof(off)) < 0)
-			{
-				if (d_opt)
-				{
-					perror("Error setting socket option for both IPv values");
-				}
-				syslog(LOG_ERR, "Error setting socket option for both IPv values");
+			{				
+				perror("Error setting socket option for both IPv values");
+				
+				// syslog(LOG_ERR, "Error setting socket option for both IPv values");
 				exit(EXIT_FAILURE);
 			}
 		}
 	}
 
 	if (bind(sock, (struct sockaddr *)s, s_size) != 0)
-	{
-		if (d_opt)
-		{
-			perror("Error binding socket");
-		}
-		syslog(LOG_ERR, "Error binding socket");
+	{		
+		perror("Error binding socket");
+		
+		// syslog(LOG_ERR, "Error binding socket");
 		exit(EXIT_FAILURE);
 	}
 
@@ -124,13 +116,8 @@ int openSocket(void)
 		{
 			perror("Error getting socket name");
 		}
-		syslog(LOG_ERR, "Error getting socket name");
+		// syslog(LOG_ERR, "Error getting socket name");
 		exit(EXIT_FAILURE);
-	}
-
-	if (d_opt == 1)
-	{
-		printf("Listening on port #%d.\n", port);
 	}
 
 	if (listen(sock, DEBUG_BACKLOG) < 0)
@@ -139,8 +126,22 @@ int openSocket(void)
 		{
 			perror("Error listening on socket");
 		}
-		syslog(LOG_ERR, "Error listening on socket");
+		// syslog(LOG_ERR, "Error listening on socket");
 		exit(EXIT_FAILURE);
+	}
+
+	if (d_opt == 1)
+	{
+		printf("Listening on port #%d.\n", port);
+	}
+
+	if (d_opt == 0)
+	{
+		if (daemon(0, 1) == -1)
+		{
+			perror("daemon");
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	return sock;
