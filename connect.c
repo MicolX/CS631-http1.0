@@ -280,7 +280,7 @@ void handleConnection(int fd)
 		char *uri = request->uri;
 		(void)strsep(&uri, "n");
 
-		if (runcgi(sockFd, uri, cgiDir) == -1)
+		if (runcgi(fd, uri, cgiDir) == -1)
 		{
 			if (d_opt)
 			{
@@ -340,7 +340,7 @@ void handleConnection(int fd)
 void handleSocket(int sock)
 {
 	pid_t pid;
-	int sockFd
+	int sockFd;
 	// int rval;
 	socklen_t size;
 	// socklen_t len;
