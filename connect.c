@@ -348,6 +348,7 @@ void handleSocket(int sock)
 	else if (pid == 0)
 	{
 		handleConnection(sockFd);
+		exit(EXIT_SUCCESS);
 	}
 }
 
