@@ -27,8 +27,8 @@
 
 // extern int domain;
 
-// int
-// verifyIp(const char *str);
+int
+verifyIp(const char *str);
 
 // int
 // openSocket(void);
