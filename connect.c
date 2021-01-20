@@ -76,9 +76,7 @@ int openSocket(void)
 		sin->sin6_family = PF_INET6;
 		if (ipAddr)
 		{
-			
 			err(EXIT_FAILURE, "Invalid IPv6 address.\n");
-			
 		}
 		else
 		{
@@ -146,14 +144,9 @@ int openSocket(void)
 	return sock;
 }
 
-/*
- * Handles connections on a socket by receiving, parsing, and responding
- * to requests.
- */
-void handleSocket(int sock)
+void handleConnection(int fd)
 {
-	int sockFd, rval;
-	socklen_t size;
+	int rval;
 	socklen_t len;
 	time_t timer;
 
@@ -162,9 +155,9 @@ void handleSocket(int sock)
 	char claddr[INET6_ADDRSTRLEN];
 
 	struct sockaddr_storage addr;
-	struct sockaddr_in6 client;
 
 	struct tm *gtime;
+
 	Request *request = (Request *)malloc(sizeof(Request));
 	Response *response = (Response *)malloc(sizeof(Response));
 
@@ -188,21 +181,8 @@ void handleSocket(int sock)
 		exit(EXIT_FAILURE);
 	}
 
-	size = sizeof(client);
-	if ((sockFd = accept(sock, (struct sockaddr *)&client, &size)) < 0)
-	{
-		if (d_opt)
-		{
-			perror("Error accepting connection on socket");
-		}
-		syslog(LOG_ERR, "Error accepting connection on socket");
-		exit(EXIT_FAILURE);
-	}
-
-	/* No loop here as per instruction connections are terminated after requests are served. */
-
 	bzero(buf, sizeof(buf));
-	if ((rval = read(sockFd, buf, BUFSIZ)) < 0)
+	if ((rval = read(fd, buf, BUFSIZ)) < 0)
 	{
 		if (d_opt)
 		{
@@ -218,7 +198,7 @@ void handleSocket(int sock)
 	}
 
 	len = sizeof(addr);
-	if (getpeername(sockFd, (struct sockaddr *)&addr, &len) < 0)
+	if (getpeername(fd, (struct sockaddr *)&addr, &len) < 0)
 	{
 		if (d_opt)
 		{
@@ -320,7 +300,7 @@ void handleSocket(int sock)
 			syslog(LOG_ERR, "Error composing response");
 		}
 
-		if (reply(sockFd, request, response) == -1)
+		if (reply(fd, request, response) == -1)
 		{
 			if (d_opt)
 			{
@@ -349,7 +329,225 @@ void handleSocket(int sock)
 	}
 
 	free(request);
-	(void)close(sockFd);
+	free(response);
+	(void)close(fd);
+}
+
+/*
+ * Handles connections on a socket by receiving, parsing, and responding
+ * to requests.
+ */
+void handleSocket(int sock)
+{
+	pid_t pid;
+	int sockFd
+	// int rval;
+	socklen_t size;
+	// socklen_t len;
+	// time_t timer;
+
+	// const char *rip;
+	// char buf[BUFSIZ];
+	// char claddr[INET6_ADDRSTRLEN];
+
+	// struct sockaddr_storage addr;
+	struct sockaddr_in6 client;
+
+	// struct tm *gtime;
+	// Request *request = (Request *)malloc(sizeof(Request));
+	// Response *response = (Response *)malloc(sizeof(Response));
+
+	// if (request == NULL)
+	// {
+	// 	if (d_opt)
+	// 	{
+	// 		perror("Error allocating memory to request structure");
+	// 	}
+	// 	syslog(LOG_ERR, "Error allocating memory to request structure");
+	// 	exit(EXIT_FAILURE);
+	// }
+
+	// if (response == NULL)
+	// {
+	// 	if (d_opt)
+	// 	{
+	// 		perror("Error allocating memory to response structure");
+	// 	}
+	// 	syslog(LOG_ERR, "Error allocating memory to response structure");
+	// 	exit(EXIT_FAILURE);
+	// }
+
+	size = sizeof(client);
+	if ((sockFd = accept(sock, (struct sockaddr *)&client, &size)) < 0)
+	{
+		if (d_opt)
+		{
+			perror("Error accepting connection on socket");
+		}
+		syslog(LOG_ERR, "Error accepting connection on socket");
+		exit(EXIT_FAILURE);
+	}
+
+	if ((pid = fork()) < 0)
+	{
+		err(EXIT_FAILURE, "Fork failed");
+	}
+	else if (pid == 0)
+	{
+		handleConnection(sockFd);
+	}
+
+	/* No loop here as per instruction connections are terminated after requests are served. */
+
+	// bzero(buf, sizeof(buf));
+	// if ((rval = read(sockFd, buf, BUFSIZ)) < 0)
+	// {
+	// 	if (d_opt)
+	// 	{
+	// 		perror("Error reading socket");
+	// 	}
+	// 	syslog(LOG_ERR, "Error reading socket");
+	// 	return;
+	// }
+
+	// if (rval == 0)
+	// {
+	// 	return;
+	// }
+
+	// len = sizeof(addr);
+	// if (getpeername(sockFd, (struct sockaddr *)&addr, &len) < 0)
+	// {
+	// 	if (d_opt)
+	// 	{
+	// 		perror("Error getting peer name");
+	// 	}
+	// 	syslog(LOG_ERR, "Error getting peer name");
+	// 	return;
+	// }
+
+	// if (domain == PF_INET)
+	// {
+	// 	struct sockaddr_in *s = (struct sockaddr_in *)&addr;
+	// 	port = ntohs(s->sin_port);
+	// 	rip = inet_ntop(PF_INET, &s->sin_addr, claddr, sizeof(claddr));
+	// }
+	// else
+	// {
+	// 	struct sockaddr_in6 *s = (struct sockaddr_in6 *)&addr;
+	// 	port = ntohs(s->sin6_port);
+	// 	rip = inet_ntop(PF_INET6, &s->sin6_addr, claddr, sizeof(claddr));
+	// }
+
+	// if (rip == NULL)
+	// {
+	// 	if (d_opt)
+	// 	{
+	// 		perror("inet_ntop error");
+	// 	}
+	// 	syslog(LOG_ERR, "inet_ntop error");
+	// 	rip = "unknown";
+	// }
+
+	// if (time(&timer) == -1)
+	// {
+	// 	if (d_opt)
+	// 	{
+	// 		perror("Error getting current time");
+	// 	}
+	// 	syslog(LOG_ERR, "Error getting current time");
+	// 	return;
+	// }
+
+	// if ((gtime = gmtime(&timer)) == NULL)
+	// {
+	// 	if (d_opt)
+	// 	{
+	// 		perror("Error converting current time to GMT time");
+	// 	}
+	// 	syslog(LOG_ERR, "Error converting current time to GMT time");
+	// 	return;
+	// }
+
+	// if (parse(buf, request) == -1)
+	// {
+	// 	if (d_opt)
+	// 	{
+	// 		perror("Error parsing response");
+	// 	}
+	// 	syslog(LOG_ERR, "Error parsing response");
+	// }
+
+	// if (strchr(request->uri, (int)'~') != NULL)
+	// {
+	// 	request->hastilde = 1;
+	// 	char *old = strdup(request->uri);
+	// 	if (userdirhandler(old, request->uri) == -1)
+	// 	{
+	// 		if (d_opt)
+	// 		{
+	// 			perror("Error fetching home directory");
+	// 		}
+	// 		syslog(LOG_ERR, "Error fetching home directory");
+	// 		return;
+	// 	}
+	// }
+
+	// if (strncmp(request->uri, CGIPREFIX, strlen(CGIPREFIX)) == 0 && c_opt == 1)
+	// {
+	// 	char *uri = request->uri;
+	// 	(void)strsep(&uri, "n");
+
+	// 	if (runcgi(sockFd, uri, cgiDir) == -1)
+	// 	{
+	// 		if (d_opt)
+	// 		{
+	// 			perror("Error running cgi");
+	// 		}
+	// 		syslog(LOG_ERR, "Error running cgi");
+	// 	}
+	// }
+	// else
+	// {
+	// 	if (respond(dir, request, response) == -1)
+	// 	{
+	// 		if (d_opt)
+	// 		{
+	// 			perror("Error composing response");
+	// 		}
+	// 		syslog(LOG_ERR, "Error composing response");
+	// 	}
+
+	// 	if (reply(sockFd, request, response) == -1)
+	// 	{
+	// 		if (d_opt)
+	// 		{
+	// 			perror("Error sending response");
+	// 		}
+	// 		syslog(LOG_ERR, "Error sending response");
+	// 	}
+	// }
+
+	// if (time(&timer) == -1)
+	// {
+	// 	if (d_opt)
+	// 	{
+	// 		perror("Error getting current time");
+	// 	}
+	// 	syslog(LOG_INFO, "Error getting current time");
+	// }
+
+	// if (writeLog(rip, gtime, strtok(buf, "\n"), response->status, response->contentlength) == -1)
+	// {
+	// 	if (d_opt)
+	// 	{
+	// 		perror("Error converting current time to GMT time");
+	// 	}
+	// 	syslog(LOG_INFO, "Error converting current time to GMT time");
+	// }
+
+	// free(request);
+	// (void)close(sockFd);
 }
 
 /*
@@ -358,39 +556,56 @@ void handleSocket(int sock)
 void startServer(void)
 {
 	int socket;
+	fd_set ready;
+	struct timeval to;
 
 	socket = openSocket();
 
 	for (;;)
 	{
+		FD_ZERO(&ready);
+		FD_SET(socket, &ready);
+		to.tv_sec = SLEEP;
+		to.tv_usec = 0;
 
-		if (d_opt == 1)
+		if (select(socket + 1, &ready, 0, 0, &to) < 0)
+		{
+			if (d_opt)
+			{
+				perror("Error selecting socket");
+			}
+			syslog(LOG_INFO, "Error selecting socket");
+			continue;
+		}
+
+		if (FD_ISSET(socket, &ready))
 		{
 			handleSocket(socket);
 		}
-		else
-		{
-			fd_set ready;
-			struct timeval to;
+		// if (d_opt == 1)
+		// {
+		// 	handleSocket(socket);
+		// }
+		// else
+		// {
+		// 	FD_ZERO(&ready);
+		// 	FD_SET(socket, &ready);
+		// 	to.tv_sec = SLEEP;
+		// 	to.tv_usec = 0;
+		// 	if (select(socket + 1, &ready, 0, 0, &to) < 0)
+		// 	{
+		// 		if (d_opt)
+		// 		{
+		// 			perror("Error selecting socket");
+		// 		}
+		// 		syslog(LOG_INFO, "Error selecting socket");
+		// 		continue;
+		// 	}
 
-			FD_ZERO(&ready);
-			FD_SET(socket, &ready);
-			to.tv_sec = SLEEP;
-			to.tv_usec = 0;
-			if (select(socket + 1, &ready, 0, 0, &to) < 0)
-			{
-				if (d_opt)
-				{
-					perror("Error selecting socket");
-				}
-				syslog(LOG_INFO, "Error selecting socket");
-				continue;
-			}
-
-			if (FD_ISSET(socket, &ready))
-			{
-				handleSocket(socket);
-			}
-		}
+		// 	if (FD_ISSET(socket, &ready))
+		// 	{
+		// 		handleSocket(socket);
+		// 	}
+		// }
 	}
 }
