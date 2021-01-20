@@ -315,6 +315,7 @@ void handleConnection(int fd)
 	free(request);
 	free(response);
 	(void)close(fd);
+	exit(EXIT_SUCCESS);
 }
 
 /*
@@ -341,15 +342,15 @@ void handleSocket(int sock)
 		exit(EXIT_FAILURE);
 	}
 
-	handleConnection(sockFd);
-	// if ((pid = fork()) < 0)
-	// {
-	// 	err(EXIT_FAILURE, "Fork failed");
-	// }
-	// else if (pid == 0)
-	// {
-	// 	handleConnection(sockFd);
-	// }
+	// handleConnection(sockFd);
+	if ((pid = fork()) < 0)
+	{
+		err(EXIT_FAILURE, "Fork failed");
+	}
+	else if (pid == 0)
+	{
+		handleConnection(sockFd);
+	}
 }
 
 void reap() 
