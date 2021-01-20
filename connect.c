@@ -353,10 +353,7 @@ void handleSocket(int sock)
 	}
 }
 
-void reap() 
-{
-	wait(NULL);
-}
+
 
 /*
  * Handles server startup and loops to continually managa socket connections as they come in.
@@ -368,11 +365,6 @@ void startServer(void)
 	struct timeval to;
 
 	socket = openSocket();
-
-	if (signal(SIGCHLD, reap) == SIG_ERR)
-	{
-		err(EXIT_FAILURE, "Failed setting SIGCHLD");
-	}
 
 	for (;;)
 	{
