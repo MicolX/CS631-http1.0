@@ -341,15 +341,15 @@ void handleSocket(int sock)
 		exit(EXIT_FAILURE);
 	}
 
-	if ((pid = fork()) < 0)
-	{
-		err(EXIT_FAILURE, "Fork failed");
-	}
-	else if (pid == 0)
-	{
-		handleConnection(sockFd);
-		exit(EXIT_SUCCESS);
-	}
+	handleConnection(sockFd);
+	// if ((pid = fork()) < 0)
+	// {
+	// 	err(EXIT_FAILURE, "Fork failed");
+	// }
+	// else if (pid == 0)
+	// {
+	// 	handleConnection(sockFd);
+	// }
 }
 
 void reap() 
