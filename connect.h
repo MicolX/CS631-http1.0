@@ -25,16 +25,8 @@
 #define DEBUG_BACKLOG 10
 #define SLEEP 5
 
-// extern int domain;
-
 int
 verifyIp(const char *str);
-
-// int
-// openSocket(void);
-
-// void
-// handleSocket(int socket);
 
 void
 startServer(void);
