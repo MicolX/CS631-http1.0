@@ -36,6 +36,11 @@ int testDir(char *dir)
 	}
 }
 
+void reap() 
+{
+	wait(NULL);
+}
+
 /*
  * Parses and validations options. Starts the server depending on the input instructions.
  */
@@ -113,6 +118,11 @@ int main(int argc, char **argv)
 			fprintf(stderr, "%s: invalid option '%c'\n", argv[0], opt);
 			exit(EXIT_FAILURE);
 		}
+	}
+
+	if (signal(SIGCHLD, reap) == SIG_ERR)
+	{
+		err(EXIT_FAILURE, "Failed setting SIGCHLD");
 	}
 
 	dir = argv[optind];
