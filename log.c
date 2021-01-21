@@ -41,7 +41,7 @@ int writeLog(const char *rip, struct tm *time, char *firstLine, const char *stat
 		return -1;
 	}
 
-	if (snprintf(contentBuf, len, "%s %s %s %s %lld", rip, timeBuf, firstLine, statusCode, contentLength) < 0)
+	if (snprintf(contentBuf, len, "%s %s %s %s %lld\n", rip, timeBuf, firstLine, statusCode, contentLength) < 0)
 	{ /* Gets rid of newline char */
 		syslog(LOG_INFO, "Failed at snprintf()");
 		return -1;
