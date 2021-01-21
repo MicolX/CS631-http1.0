@@ -290,7 +290,7 @@ void handleConnection(int fd)
 		}
 	}
 
-	if (writeLog(rip, gtime, strtok(buf, "\n"), response->status, response->contentlength) == -1)
+	if (writeLog(rip, gtime, strtok(buf, "\r"), response->status, response->contentlength) == -1)
 	{
 		if (d_opt)
 		{
