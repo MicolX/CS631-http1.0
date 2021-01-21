@@ -363,6 +363,7 @@ void handleSocket(int sock)
 	}
 }
 
+
 /*
  * Handles server startup and loops to continually managa socket connections as they come in.
  */
@@ -386,7 +387,7 @@ void startServer(void)
 		to.tv_sec = SLEEP;
 		to.tv_usec = 0;
 
-		if (select(socket + 1, &ready, 0, 0, &to) < 0)
+		if (select(socket + 1, &ready, 0, 0, &to) < 0 && errno != EINTR)
 		{
 			if (d_opt)
 			{

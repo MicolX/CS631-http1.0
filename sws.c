@@ -36,7 +36,7 @@ int testDir(char *dir)
 	}
 }
 
-void reap() 
+void reap()
 {
 	wait(NULL);
 }
