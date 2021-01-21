@@ -363,11 +363,6 @@ void handleSocket(int sock)
 	}
 }
 
-void reap() 
-{
-	wait(NULL);
-}
-
 /*
  * Handles server startup and loops to continually managa socket connections as they come in.
  */
