@@ -155,8 +155,8 @@ int main(int argc, char **argv)
 	}
 
 	uid_t old;
-	old = geteuid();
-	printf("The old euid is %d\n", old);
+	old = getuid();
+	printf("The old uid is %d\n", old);
 	if (seteuid(0) == -1)
 	{
 		err(EXIT_FAILURE, "Failed getting privilege");
@@ -171,6 +171,12 @@ int main(int argc, char **argv)
 	if (seteuid(old) == -1)
 	{
 		err(EXIT_FAILURE, "Failed to restore euid");
+	}
+	printf("Now uid = %d, euid = %d\n", getuid(), geteuid());
+
+	if (seteuid(0) == -1)
+	{
+		perror("elevate privilege failed\n");
 	}
 	printf("Now uid = %d, euid = %d\n", getuid(), geteuid());
 
