@@ -130,16 +130,12 @@ int openSocket(void)
 void handleConnection(int fd)
 {
 	int rval;
-	socklen_t len;
-	time_t timer;
-
 	const char *rip;
-	char buf[BUFSIZ];
-	char claddr[INET6_ADDRSTRLEN];
-
-	struct sockaddr_storage addr;
-
+	char buf[BUFSIZ], claddr[INET6_ADDRSTRLEN];
+	socklen_t len;
+	time_t now;
 	struct tm *gtime;
+	struct sockaddr_storage addr;
 
 	Request *request = (Request *)malloc(sizeof(Request));
 	Response *response = (Response *)malloc(sizeof(Response));
@@ -215,7 +211,7 @@ void handleConnection(int fd)
 		rip = "unknown";
 	}
 
-	if (time(&timer) == -1)
+	if ((now = time(0)) == -1)
 	{
 		if (d_opt)
 		{
@@ -225,7 +221,7 @@ void handleConnection(int fd)
 		return;
 	}
 
-	if ((gtime = gmtime(&timer)) == NULL)
+	if ((gtime = gmtime(&now)) == NULL)
 	{
 		if (d_opt)
 		{
@@ -292,15 +288,6 @@ void handleConnection(int fd)
 			}
 			syslog(LOG_ERR, "Error sending response");
 		}
-	}
-
-	if (time(&timer) == -1)
-	{
-		if (d_opt)
-		{
-			perror("Error getting current time");
-		}
-		syslog(LOG_INFO, "Error getting current time");
 	}
 
 	if (writeLog(rip, gtime, strtok(buf, "\n"), response->status, response->contentlength) == -1)
