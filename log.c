@@ -37,7 +37,7 @@ int writeLog(const char *rip, struct tm *time, char *firstLine, const char *stat
 		return -1;
 	}
 
-	if (write(logFd, contentBuf, sizeof(contentBuf)) < 0)
+	if (write(logFd, contentBuf, strlen(contentBuf)) < 0)
 	{
 		syslog(LOG_INFO, "Error writing IP to log");
 		return -1;
