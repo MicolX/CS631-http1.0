@@ -323,7 +323,7 @@ void handleConnection(int fd)
 		}
 		syslog(LOG_ERR, "Error shutting down socket");
 	}
-	
+
 	(void)close(fd);
 	exit(EXIT_SUCCESS);
 }
@@ -363,7 +363,10 @@ void handleSocket(int sock)
 	}
 }
 
-
+void reap() 
+{
+	wait(NULL);
+}
 
 /*
  * Handles server startup and loops to continually managa socket connections as they come in.
@@ -373,6 +376,11 @@ void startServer(void)
 	int socket;
 	fd_set ready;
 	struct timeval to;
+
+	if (signal(SIGCHLD, reap) == SIG_ERR)
+	{
+		err(EXIT_FAILURE, "Failed setting SIGCHLD");
+	}
 
 	socket = openSocket();
 
