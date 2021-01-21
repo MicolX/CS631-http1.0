@@ -22,6 +22,16 @@ int writeLog(const char *rip, struct tm *time, char *firstLine, const char *stat
 	char timeBuf[TIME_STR_MAX];
 	(void)strftime(timeBuf, TIME_STR_MAX, "%Y-%m-%dT%H:%M:%SZ", time);
 
+	if (firstLine[strlen(firstLine) - 1] == '\n')
+	{
+		firstLine[strlen(firstLine) - 1] = '\0';
+	}
+
+	if (strlen(status) > 3)
+	{
+		status[3] = '\0';
+	}
+
 	int len = strlen(rip) + sizeof(timeBuf) + strlen(firstLine) + strlen(status) + sizeof(contentLength) + 1;
 	char *contentBuf = malloc(len);
 	
