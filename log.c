@@ -22,14 +22,16 @@ int writeLog(const char *rip, struct tm *time, char *firstLine, const char *stat
 	char timeBuf[TIME_STR_MAX];
 	(void)strftime(timeBuf, TIME_STR_MAX, "%Y-%m-%dT%H:%M:%SZ", time);
 
-	char *contentBuf = malloc(strlen(rip) + strlen(timeBuf) + strlen(firstLine) + strlen(status) + sizeof(contentLength) + 1);
+	int len = strlen(rip) + sizeof(timeBuf) + strlen(firstLine) + strlen(status) + sizeof(contentLength) + 1;
+	char *contentBuf = malloc(len);
+	
 	if (contentBuf == NULL)
 	{
 		syslog(LOG_INFO, "Error allocating memory for content length - string cast");
 		return -1;
 	}
 
-	if (snprintf(contentBuf, sizeof(contentBuf), "%s %s %s %s %lld", rip, timeBuf, firstLine, status, contentLength) < 0)
+	if (snprintf(contentBuf, len, "%s %s %s %s %lld", rip, timeBuf, firstLine, status, contentLength) < 0)
 	{ /* Gets rid of newline char */
 		syslog(LOG_INFO, "Failed at snprintf()");
 		return -1;
