@@ -373,11 +373,6 @@ void startServer(void)
 	fd_set ready;
 	struct timeval to;
 
-	if (signal(SIGCHLD, reap) == SIG_ERR)
-	{
-		err(EXIT_FAILURE, "Failed setting SIGCHLD");
-	}
-
 	socket = openSocket();
 
 	for (;;)
