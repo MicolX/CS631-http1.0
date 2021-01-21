@@ -23,7 +23,7 @@ int writeLog(const char *rip, struct tm *time, char *firstLine, const char *stat
 {
 	char timeBuf[TIME_STR_MAX], statusCode[CODELEN];
 
-	(void)strlcpy(statusCode, status, 3);
+	(void)strlcpy(statusCode, status, CODELEN);
 
 	(void)strftime(timeBuf, TIME_STR_MAX, "%Y-%m-%dT%H:%M:%SZ", time);
 
