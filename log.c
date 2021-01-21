@@ -21,7 +21,7 @@ int
 writeLog(const char *rip, struct tm *time, char *firstLine, const char *status, long long contentLength)
 {
         char timeBuf[TIME_STR_MAX];
-        (void)strftime(timeBuf, TIME_STR_MAX, "%Y-%m-%dT%H:%M:%SZ");
+        (void)strftime(timeBuf, TIME_STR_MAX, "%Y-%m-%dT%H:%M:%SZ", time);
 
         char *contentBuf = malloc(strlen(rip)+sizeof(timeBuf)+strlen(firstLine)+strlen(status)+sizeof(contentLength)+1);
         if (contentBuf == NULL) {
