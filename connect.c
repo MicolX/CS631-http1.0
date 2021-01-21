@@ -382,6 +382,7 @@ void startServer(void)
 		to.tv_sec = SLEEP;
 		to.tv_usec = 0;
 
+		// select() returns EINTR if a signal is caught and handled. So we ignore EINTR
 		if (select(socket + 1, &ready, 0, 0, &to) < 0 && errno != EINTR)
 		{
 			if (d_opt)
@@ -390,6 +391,11 @@ void startServer(void)
 			}
 			syslog(LOG_INFO, "Error selecting socket");
 			continue;
+		}
+
+		if (errno == EINTR)
+		{
+			errno = 0;
 		}
 
 		if (FD_ISSET(socket, &ready))
