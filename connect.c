@@ -309,11 +309,21 @@ void handleConnection(int fd)
 		{
 			perror("Error converting current time to GMT time");
 		}
-		syslog(LOG_INFO, "Error converting current time to GMT time");
+		syslog(LOG_ERR, "Error converting current time to GMT time");
 	}
 
 	free(request);
 	free(response);
+
+	if (shutdown(fd, SHUT_RDWR) == -1) 
+	{
+		if (d_opt)
+		{
+			perror("Error shutting down socket");
+		}
+		syslog(LOG_ERR, "Error shutting down socket");
+	}
+	
 	(void)close(fd);
 	exit(EXIT_SUCCESS);
 }
