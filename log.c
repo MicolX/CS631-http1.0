@@ -13,23 +13,23 @@
 
 #include "log.h"
 
+#define CODELEN 4
+
 /*
  * Logs requests made to the server to the designated logging file. This file is specified as a
  * parameter of the 'l' option on server startup and is validated/opened in sws.c
  */
 int writeLog(const char *rip, struct tm *time, char *firstLine, const char *status, long long contentLength)
 {
-	char timeBuf[TIME_STR_MAX];
+	char timeBuf[TIME_STR_MAX], statusCode[CODELEN];
+
+	(void)strlcpy(statusCode, status, 3);
+
 	(void)strftime(timeBuf, TIME_STR_MAX, "%Y-%m-%dT%H:%M:%SZ", time);
 
 	if (firstLine[strlen(firstLine) - 1] == '\n')
 	{
 		firstLine[strlen(firstLine) - 1] = '\0';
-	}
-
-	if (strlen(status) > 3)
-	{
-		status[3] = '\0';
 	}
 
 	int len = strlen(rip) + sizeof(timeBuf) + strlen(firstLine) + strlen(status) + sizeof(contentLength) + 1;
