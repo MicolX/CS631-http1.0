@@ -22,7 +22,7 @@
  */
 int writeLog(const char *rip, struct tm *time, char *firstLine, const char *status, long long contentLength)
 {
-	char timeBuf[TIME_STR_MAX], statusCode[CODELEN], contentLen[LONGSIZ];
+	char timeBuf[TIME_STR_MAX], statusCode[CODELEN];
 
 	(void)strlcpy(statusCode, status, CODELEN);
 
