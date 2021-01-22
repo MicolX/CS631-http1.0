@@ -20,15 +20,15 @@
  * Logs requests made to the server to the designated logging file. This file is specified as a
  * parameter of the 'l' option on server startup and is validated/opened in sws.c
  */
-int writeLog(const char *rip, struct tm *time, char *firstLine, const char *status, long long contentLength)
+int writeLog(const char *rip, char time[], char *firstLine, const char *status, long long contentLength)
 {
-	char timeBuf[TIME_STR_MAX], statusCode[CODELEN];
+	char statusCode[CODELEN];
 
 	(void)strlcpy(statusCode, status, CODELEN);
 
-	(void)strftime(timeBuf, TIME_STR_MAX, "%Y-%m-%dT%H:%M:%SZ", time);
+	// (void)strftime(timeBuf, TIME_STR_MAX, "%Y-%m-%dT%H:%M:%SZ", time);
 
-	int len = strlen(rip) + sizeof(timeBuf) + strlen(firstLine) + strlen(statusCode) + LONGSIZ + 1;
+	int len = strlen(rip) + strlen(time) + strlen(firstLine) + strlen(statusCode) + LONGSIZ + 1;
 	
 	char *contentBuf = malloc(len);
 	if (contentBuf == NULL)
@@ -37,7 +37,7 @@ int writeLog(const char *rip, struct tm *time, char *firstLine, const char *stat
 		return -1;
 	}
 
-	if (snprintf(contentBuf, len, "%s %s \"%s\" %s %lld\n", rip, timeBuf, firstLine, statusCode, contentLength) < 0)
+	if (snprintf(contentBuf, len, "%s %s \"%s\" %s %lld\n", rip, time, firstLine, statusCode, contentLength) < 0)
 	{ /* Gets rid of newline char */
 		syslog(LOG_INFO, "Failed at snprintf()");
 		return -1;

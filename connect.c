@@ -12,6 +12,7 @@
 #include "connect.h"
 
 #define CGIPREFIX "/cgi-bin"
+// #define TIME_STR_MAX 21 /* Max size of time string as dictated by provided format */
 
 int domain;
 
@@ -131,7 +132,7 @@ void handleConnection(int fd)
 {
 	int rval;
 	const char *rip;
-	char buf[BUFSIZ], claddr[INET6_ADDRSTRLEN];
+	char buf[BUFSIZ], claddr[INET6_ADDRSTRLEN], time[MAX_TIME];
 	socklen_t len;
 	time_t now;
 	struct tm *gtime;
@@ -231,6 +232,8 @@ void handleConnection(int fd)
 		return;
 	}
 
+	(void)strftime(time, MAX_TIME, "%Y-%m-%dT%H:%M:%SZ", gtime);
+
 	if (parse(buf, request) == -1)
 	{
 		if (d_opt)
@@ -290,7 +293,7 @@ void handleConnection(int fd)
 		}
 	}
 
-	if (writeLog(rip, gtime, strtok(buf, "\r"), response->status, response->contentlength) == -1)
+	if (writeLog(rip, time, strtok(buf, "\r"), response->status, response->contentlength) == -1)
 	{
 		if (d_opt)
 		{
