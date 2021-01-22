@@ -132,7 +132,7 @@ void handleConnection(int fd)
 {
 	int rval;
 	const char *rip;
-	char buf[BUFSIZ], claddr[INET6_ADDRSTRLEN], time[MAX_TIME];
+	char buf[BUFSIZ], claddr[INET6_ADDRSTRLEN], curtime[MAX_TIME];
 	socklen_t len;
 	time_t now;
 	struct tm *gtime;
@@ -232,7 +232,7 @@ void handleConnection(int fd)
 		return;
 	}
 
-	(void)strftime(time, MAX_TIME, "%Y-%m-%dT%H:%M:%SZ", gtime);
+	(void)strftime(curtime, MAX_TIME, "%Y-%m-%dT%H:%M:%SZ", gtime);
 
 	if (parse(buf, request) == -1)
 	{
@@ -293,7 +293,7 @@ void handleConnection(int fd)
 		}
 	}
 
-	if (writeLog(rip, time, strtok(buf, "\r"), response->status, response->contentlength) == -1)
+	if (writeLog(rip, curtime, strtok(buf, "\r"), response->status, response->contentlength) == -1)
 	{
 		if (d_opt)
 		{
