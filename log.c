@@ -14,6 +14,7 @@
 #include "log.h"
 
 #define CODELEN 4
+#define LONGSIZ 20
 
 /*
  * Logs requests made to the server to the designated logging file. This file is specified as a
@@ -21,12 +22,12 @@
  */
 int writeLog(const char *rip, struct tm *time, char *firstLine, const char *status, long long contentLength)
 {
-	char timeBuf[TIME_STR_MAX], statusCode[CODELEN], contentLen[BUFSIZ];
+	char timeBuf[TIME_STR_MAX], statusCode[CODELEN], contentLen[LONGSIZ];
 
 	(void)strlcpy(statusCode, status, CODELEN);
 
 	(void)strftime(timeBuf, TIME_STR_MAX, "%Y-%m-%dT%H:%M:%SZ", time);
-	(void)snprintf(contentLen, BUFSIZ, "%lld", contentLength);
+	(void)snprintf(contentLen, LONGSIZ, "%lld", contentLength);
 
 	int len = strlen(rip) + sizeof(timeBuf) + strlen(firstLine) + strlen(statusCode) + strlen(contentLen) + 1;
 	char *contentBuf = malloc(len);
