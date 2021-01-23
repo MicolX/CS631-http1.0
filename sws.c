@@ -163,7 +163,7 @@ int main(int argc, char **argv)
 	// }
 
 	if (chroot(dir) != 0) {
-		err(EXIT_FAILURE, "Chroot failed: %s", strerror(errno));
+		err(EXIT_FAILURE, "Chroot failed");
 	}
 
 	// if (seteuid(old) == -1)
