@@ -168,7 +168,7 @@ int main(int argc, char **argv)
 
 	if (seteuid(old) == -1)
 	{
-		err(EXIT_FAILURE, "Failed to restore euid")
+		err(EXIT_FAILURE, "Failed to restore euid");
 	}
 
 	openlog(argv[0], LOG_PID, 0); /* Opens system logging to track server errors */
