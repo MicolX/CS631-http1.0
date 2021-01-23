@@ -47,6 +47,7 @@ void reap()
 int main(int argc, char **argv)
 {
 	char opt;
+	uid_t old;
 	ipAddr = NULL;
 
 	while ((opt = getopt(argc, argv, "c:dhi:l:p:")) != -1)
@@ -146,30 +147,29 @@ int main(int argc, char **argv)
 	if (testDir(dir) != 0)
 	{
 		/* Checking dir right before the networking code starts (moved from in opt loop) */
-		err(EXIT_FAILURE, "Failed to open root directory: %s\n", strerror(errno));
+		err(EXIT_FAILURE, "Failed to open root directory");
 	}
 
 	if (chdir(dir) != 0)
 	{
-		err(EXIT_FAILURE, "Failed to chdir: %s\n", strerror(errno));
+		err(EXIT_FAILURE, "Failed to chdir";
 	}
 
-	uid_t old;
 	old = getuid();
 	
-	// if (seteuid(0) == -1)
-	// {
-	// 	err(EXIT_FAILURE, "Failed getting privilege");
-	// }
+	if (seteuid(0) == -1)
+	{
+		err(EXIT_FAILURE, "Failed getting privilege");
+	}
 
 	if (chroot(dir) != 0) {
 		err(EXIT_FAILURE, "Chroot failed");
 	}
 
-	// if (seteuid(old) == -1)
-	// {
-	// 	err(EXIT_FAILURE, "Failed to restore euid");
-	// }
+	if (seteuid(old) == -1)
+	{
+		err(EXIT_FAILURE, "Failed to restore euid");
+	}
 
 	openlog(argv[0], LOG_PID, 0); /* Opens system logging to track server errors */
 
