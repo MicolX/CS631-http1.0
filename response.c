@@ -355,7 +355,7 @@ int runcgi(int socket, char *uri, char *dir)
 		}
 
 		// execl("/bin/sh", "sh", "-c", command, (char*) 0);
-		execl(command, "", (char *)0);
+		execl(path, "", (char *)0);
 
 		return -1;
 	}
