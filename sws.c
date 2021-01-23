@@ -152,7 +152,7 @@ int main(int argc, char **argv)
 
 	if (chdir(dir) != 0)
 	{
-		err(EXIT_FAILURE, "Failed to chdir";
+		err(EXIT_FAILURE, "Failed to chdir");
 	}
 
 	old = getuid();
