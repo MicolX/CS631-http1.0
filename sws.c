@@ -154,23 +154,26 @@ int main(int argc, char **argv)
 		err(EXIT_FAILURE, "Failed to chdir: %s\n", strerror(errno));
 	}
 
-	// uid_t old;
-	// old = getuid();
-	// if (seteuid(0) == -1)
-	// {
-	// 	err(EXIT_FAILURE, "Failed getting privilege");
-	// }
-
-	if (chroot(dir) != 0) {
-		perror("chroot");
-		exit(EXIT_FAILURE);
+	uid_t old;
+	old = geteuid();
+	printf("The old euid is %d", old);
+	if (seteuid(0) == -1)
+	{
+		err(EXIT_FAILURE, "Failed getting privilege");
 	}
 
-	// if (seteuid(old) == -1)
-	// {
-	// 	err(EXIT_FAILURE, "Failed to restore euid");
-	// }
+	printf("Now uid = %d, euid = %d", getuid(), geteuid());
 
+	if (chroot(dir) != 0) {
+		err(EXIT_FAILURE, "Chroot failed: %s", strerror(errno));
+	}
+
+	if (seteuid(old) == -1)
+	{
+		err(EXIT_FAILURE, "Failed to restore euid");
+	}
+	printf("Now uid = %d, euid = %d", getuid(), geteuid());
+	
 	openlog(argv[0], LOG_PID, 0); /* Opens system logging to track server errors */
 
 	startServer();
