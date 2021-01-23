@@ -161,10 +161,10 @@ int main(int argc, char **argv)
 	// 	err(EXIT_FAILURE, "Failed getting privilege");
 	// }
 
-	// if (chroot(dir) != 0) {
-	// 	perror("chroot");
-	// 	exit(EXIT_FAILURE);
-	// }
+	if (chroot(dir) != 0) {
+		perror("chroot");
+		exit(EXIT_FAILURE);
+	}
 
 	// if (seteuid(old) == -1)
 	// {
