@@ -60,10 +60,6 @@ int main(int argc, char **argv)
 				err(EXIT_FAILURE, "Failed to open CGI directory");
 			}
 			cgiDir = optarg;
-			if (setenv("PATH", cgiDir, 0) != 0)
-			{
-				err(EXIT_FAILURE, "Failed to setenv for cgi");
-			}
 			c_opt = 1;
 			break;
 

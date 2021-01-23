@@ -311,11 +311,10 @@ int reply(int socket, Request *req, Response *res)
  */
 int runcgi(int socket, char *uri, char *dir)
 {
-	char *path, fullpath[MAXPATHLEN];
+	char *path;
 	pid_t pid;
 
 	path = strsep(&uri, "?");
-	snprintf(fullpath, MAXPATHLEN, "%s/%s", dir, path);
 
 	if ((pid = fork()) < 0)
 	{
@@ -324,6 +323,23 @@ int runcgi(int socket, char *uri, char *dir)
 	}
 	else if (pid == 0)
 	{
+		if (dup2(socket, STDOUT_FILENO) < 0)
+		{
+			syslog(LOG_ERR, "Error duping STDOUT_FILENO");
+			exit(EXIT_FAILURE);
+		}
+
+		if (dup2(socket, STDERR_FILENO) < 0)
+		{
+			syslog(LOG_ERR, "Error duping STDERR_FILENO");
+			exit(EXIT_FAILURE);
+		}
+
+		if (setenv("PATH", dir, 0) != 0)
+		{
+			syslog(LOG_ERR, "Failed to set PATH=%s", dir);
+			err(EXIT_FAILURE, "Failed to set PATH=%s", dir);
+		}
 
 		if (uri != NULL && strlen(uri) > 0)
 		{
@@ -332,26 +348,12 @@ int runcgi(int socket, char *uri, char *dir)
 			{
 				if (putenv(var) == -1)
 				{
-					syslog(LOG_INFO, "Error modifying environment");
-					return -1;
+					syslog(LOG_ERR, "Failed to set env %s", var);
+					err(EXIT_FAILURE, "Failed to set env %s", var);
 				}
 			}
 		}
 
-		if (dup2(socket, STDOUT_FILENO) < 0)
-		{
-			syslog(LOG_INFO, "Error duping STDOUT_FILENO");
-			exit(EXIT_FAILURE);
-		}
-
-		if (dup2(socket, STDERR_FILENO) < 0)
-		{
-			syslog(LOG_INFO, "Error duping STDERR_FILENO");
-			exit(EXIT_FAILURE);
-		}
-
-		char command[MAXPATHLEN];
-		snprintf(command, MAXPATHLEN, "%s", fullpath);
 		// execl("/bin/sh", "sh", "-c", command, (char*) 0);
 		execl(command, "", (char *)0);
 
