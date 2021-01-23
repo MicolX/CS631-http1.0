@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 	}
 
 	uid_t old;
-	old = getuid;
+	old = getuid();
 	if (seteuid(0) == -1)
 	{
 		err(EXIT_FAILURE, "Failed getting privilege");
