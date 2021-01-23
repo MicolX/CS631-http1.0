@@ -315,6 +315,7 @@ int runcgi(int socket, char *uri, char *dir)
 	pid_t pid;
 
 	path = strsep(&uri, "?");
+	while (path[0] == '/') path++;
 
 	if ((pid = fork()) < 0)
 	{
@@ -335,7 +336,7 @@ int runcgi(int socket, char *uri, char *dir)
 			exit(EXIT_FAILURE);
 		}
 
-		if (setenv("PATH", dir, 0) != 0)
+		if (setenv("PATH", dir, 1) != 0)
 		{
 			syslog(LOG_ERR, "Failed to set PATH=%s", dir);
 			err(EXIT_FAILURE, "Failed to set PATH=%s", dir);
@@ -354,7 +355,6 @@ int runcgi(int socket, char *uri, char *dir)
 			}
 		}
 
-		// execl("/bin/sh", "sh", "-c", command, (char*) 0);
 		execl(path, "", (char *)0);
 
 		return -1;

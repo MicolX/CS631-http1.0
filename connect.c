@@ -270,7 +270,13 @@ void handleConnection(int fd)
 				perror("Error running cgi");
 			}
 			syslog(LOG_ERR, "Error running cgi");
+			response->status = "400 Bad Request\r\n";
 		}
+		else
+		{
+			response->status = "200 OK\r\n";
+		}
+		
 	}
 	else
 	{
