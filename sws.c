@@ -154,22 +154,22 @@ int main(int argc, char **argv)
 		err(EXIT_FAILURE, "Failed to chdir: %s\n", strerror(errno));
 	}
 
-	uid_t old;
-	old = getuid();
-	if (seteuid(0) == -1)
-	{
-		err(EXIT_FAILURE, "Failed getting privilege");
-	}
+	// uid_t old;
+	// old = getuid();
+	// if (seteuid(0) == -1)
+	// {
+	// 	err(EXIT_FAILURE, "Failed getting privilege");
+	// }
 
-	if (chroot(dir) != 0) {
-		perror("chroot");
-		exit(EXIT_FAILURE);
-	}
+	// if (chroot(dir) != 0) {
+	// 	perror("chroot");
+	// 	exit(EXIT_FAILURE);
+	// }
 
-	if (seteuid(old) == -1)
-	{
-		err(EXIT_FAILURE, "Failed to restore euid");
-	}
+	// if (seteuid(old) == -1)
+	// {
+	// 	err(EXIT_FAILURE, "Failed to restore euid");
+	// }
 
 	openlog(argv[0], LOG_PID, 0); /* Opens system logging to track server errors */
 
