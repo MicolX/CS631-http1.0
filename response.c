@@ -313,6 +313,7 @@ int runcgi(int socket, char *uri, char *dir)
 {
 	char *path;
 	pid_t pid;
+	int status = 0;
 
 	path = strsep(&uri, "?");
 	while (path[0] == '/') path++;
@@ -357,10 +358,11 @@ int runcgi(int socket, char *uri, char *dir)
 
 		execl(path, "", (char *)0);
 
-		return -1;
+		status = -1;
 	}
 
 	(void)wait(NULL);
+	return status;
 }
 
 /*
