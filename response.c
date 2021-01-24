@@ -361,7 +361,6 @@ int runcgi(int socket, char *uri, char *dir)
 	}
 
 	(void)wait(NULL);
-	return 0;
 }
 
 /*
