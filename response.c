@@ -355,8 +355,8 @@ int runcgi(int socket, char *uri, char *dir)
 				}
 			}
 		}
-		printf("PATH = %s\n", getenv("PATH"));
-		execl(command, "", (char *)0);
+		
+		execl("/bin/sh", "sh", "-c", command, (char *)0);
 		status = -1;
 	}
 
