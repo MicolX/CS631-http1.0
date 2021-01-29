@@ -311,12 +311,12 @@ int reply(int socket, Request *req, Response *res)
  */
 int runcgi(int socket, char *uri, char *dir)
 {
-	char *path;
+	char *command;
 	pid_t pid;
 	int status = 0;
 
-	path = strsep(&uri, "?");
-	while (path[0] == '/') path++;
+	command = strsep(&uri, "?");
+	while (command[0] == '/') command++;
 
 	if ((pid = fork()) < 0)
 	{
@@ -355,9 +355,8 @@ int runcgi(int socket, char *uri, char *dir)
 				}
 			}
 		}
-
-		execl(path, "", (char *)0);
-
+		printf("PATH = %s\n", getenv("PATH"));
+		execl(command, "", (char *)0);
 		status = -1;
 	}
 
