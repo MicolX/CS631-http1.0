@@ -356,7 +356,7 @@ int runcgi(int socket, char *uri, char *dir)
 			}
 		}
 		
-		execl("/bin/sh", "sh", "-c", command, (char *)0);
+		execlp(command, basename(command), (char *)0);
 		status = -1;
 	}
 

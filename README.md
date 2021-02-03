@@ -4,6 +4,27 @@ Implementation of 'sws' command under BSD Unix system
 
 Team members: Mingyao Xiong, Liam Brew
 
+*** Major updates after course ended ***
+1. the server now takes requests asychronously
+2. enable setting arbitary but valid port number and ip address
+3. use chroot to prevent user from accessing outside of the root
+4. make CGI 'really' works. But reminder: use absolute path when setting CGI directory
+
+Notes about bulletpoint 3:
+In order to use chroot and refer to the example code from the lecture, I have to raise the privilege to superuser
+temporarily and lower it later on. Therefore, for the privilege to raise power, I have to change the ownership of 
+the binary file to be root and set the file setuid. 
+
+Notes about bulletpoint 4:
+This part really dragged me for a few days. At first, I realized that I should have set the environment variable
+$PATH to be the CGI directory, which was passed in as a parameter for -c option. However, even after I successfully
+setenv, I still couldn't get the CGI program running. I found out later that's because of the chroot, the absolute 
+path of CGI directory is invalid since the 'root' has changed. So did I get it done after fixing that? No and I was
+frustrated. But I was sure that it has something to do with the 'root' change since I wrote a simple test code to run 
+CGI program and it worked when without chroot. Finally, I realized that the failure of execution may be caused by 
+the inaccessible shared library after chroot. So I put a statically compiled binary under the CGI directory and boom,
+it worked! 
+
 *** Updates ***
 -- Week of Nov 30 to Dec 7 --
 1. Team met initially after class to discuss and incorporate feedback

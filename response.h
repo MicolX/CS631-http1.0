@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <fts.h>
+#include <libgen.h>
 #include <magic.h>
 #include <pwd.h>
 #include <stdlib.h>

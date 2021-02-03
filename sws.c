@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 			{
 				err(EXIT_FAILURE, "Failed to open CGI directory");
 			}
-			cgiDir = optarg;
+			cgiDir = realpath(optarg, NULL);	
 			c_opt = 1;
 			break;
 
@@ -149,6 +149,16 @@ int main(int argc, char **argv)
 		/* Checking dir right before the networking code starts (moved from in opt loop) */
 		err(EXIT_FAILURE, "Failed to open root directory");
 	}
+
+	dir = realpath(dir, NULL);
+
+	if (strncmp(dir, cgiDir, strlen(dir)) != 0)
+	{
+		err(EXIT_FAILURE, "CGI path has to be under root directory");
+	}
+
+	// convert CGI absolute path into relative path
+	cgiDir += strlen(dir) + 1;
 
 	if (chdir(dir) != 0)
 	{
