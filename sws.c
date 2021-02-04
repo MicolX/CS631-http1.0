@@ -152,13 +152,16 @@ int main(int argc, char **argv)
 
 	dir = realpath(dir, NULL);
 
-	if (strncmp(dir, cgiDir, strlen(dir)) != 0)
+	if (c_opt)
 	{
-		err(EXIT_FAILURE, "CGI path has to be under root directory");
-	}
+		if (strncmp(dir, cgiDir, strlen(dir)) != 0)
+		{
+			err(EXIT_FAILURE, "CGI path has to be under root directory");
+		}
 
-	// convert CGI absolute path into relative path
-	cgiDir += strlen(dir) + 1;
+		// convert CGI absolute path into relative path
+		cgiDir += strlen(dir) + 1;
+	}
 
 	if (chdir(dir) != 0)
 	{
