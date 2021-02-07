@@ -262,20 +262,19 @@ void handleConnection(int fd)
 		char *uri = request->uri;
 		(void)strsep(&uri, "n");
 
-		if (runcgi(fd, uri, cgiDir) == -1)
+		if (runcgi(fd, uri, cgiDir) != 0)
 		{
+			response->status = "400 Bad Request\r\n";
 			if (d_opt)
 			{
 				perror("Error running cgi");
 			}
 			syslog(LOG_ERR, "Error running cgi");
-			response->status = "400 Bad Request\r\n";
 		}
 		else
 		{
 			response->status = "200 OK\r\n";
 		}
-		
 	}
 	else
 	{

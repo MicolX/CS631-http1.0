@@ -301,12 +301,11 @@ int reply(int socket, Request *req, Response *res)
  */
 int runcgi(int socket, char *uri, char *dir)
 {
-	char *command;
 	pid_t pid;
 	int status = 0;
+	char command[MAXPATHLEN];
 
-	command = strsep(&uri, "?");
-	while (command[0] == '/') command++;
+	snprintf(command, MAXPATHLEN, "%s%s", dir, strsep(&uri, "?"));
 
 	if ((pid = fork()) < 0)
 	{
@@ -318,18 +317,21 @@ int runcgi(int socket, char *uri, char *dir)
 		if (dup2(socket, STDOUT_FILENO) < 0)
 		{
 			syslog(LOG_ERR, "Error duping STDOUT_FILENO");
+			status = -1;
 			exit(EXIT_FAILURE);
 		}
 
 		if (dup2(socket, STDERR_FILENO) < 0)
 		{
 			syslog(LOG_ERR, "Error duping STDERR_FILENO");
+			status = -1;
 			exit(EXIT_FAILURE);
 		}
 
 		if (setenv("PATH", dir, 1) != 0)
 		{
 			syslog(LOG_ERR, "Failed to set PATH=%s", dir);
+			status = -1;
 			err(EXIT_FAILURE, "Failed to set PATH=%s", dir);
 		}
 
@@ -341,6 +343,7 @@ int runcgi(int socket, char *uri, char *dir)
 				if (putenv(var) == -1)
 				{
 					syslog(LOG_ERR, "Failed to set env %s", var);
+					status = -1;
 					err(EXIT_FAILURE, "Failed to set env %s", var);
 				}
 			}
@@ -348,7 +351,19 @@ int runcgi(int socket, char *uri, char *dir)
 		
 		execlp(command, basename(command), (char *)0);
 		status = -1;
-	}
+		exit(status);
+	} 
+
+//	if (waitpid(pid, &status, WALLSIG) == -1)
+//	{
+//		syslog(LOG_ERR, "waitpid failed");
+//		err(EXIT_FAILURE, "waitpid failed");
+//	}
+//
+//	if (WIFEXITED(status))
+//	{
+//		return WEXITSTATUS(status);
+//	}
 
 	(void)wait(NULL);
 	return status;
