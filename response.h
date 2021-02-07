@@ -31,7 +31,7 @@ typedef struct response_t {
 } Response;
 
 
-int respond(char *, Request *, Response *);
+int respond(Request *, Response *);
 int reply(int, Request *, Response *);
 int runcgi(int, char *, char *);
 int userdirhandler(char *, char[]);

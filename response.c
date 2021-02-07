@@ -43,12 +43,13 @@ const char *status[] = {
 	"500 Internal Server Error\r\n",
 	"501 Not Implemented\r\n",
 	"502 Bad Gateway\r\n",
-	"503 Service Unavailable\r\n"};
+	"503 Service Unavailable\r\n"
+	};
 
 /*
  * Uses request data to build, if applicable, the appropriate response.
  */
-int respond(char *rootpath, Request *req, Response *res)
+int respond(Request *req, Response *res)
 {
 	if (req->errcode != 0)
 	{
@@ -69,18 +70,8 @@ int respond(char *rootpath, Request *req, Response *res)
 	struct tm ifmtime;
 	int fd;
 	magic_t cookie;
-	char uri[MAXPATHLEN];
 
-	if (req->hastilde == 1)
-	{
-		(void)strncpy(uri, req->uri, MAXPATHLEN);
-	}
-	else
-	{
-		snprintf(uri, MAXPATHLEN, "%s/%s", rootpath, req->uri);
-	}
-
-	if (stat(uri, &sb) == -1)
+	if (stat(req->uri, &sb) == -1)
 	{
 		switch (errno)
 		{
@@ -103,12 +94,11 @@ int respond(char *rootpath, Request *req, Response *res)
 	{
 		char htmlpath[MAXPATHLEN];
 
-		snprintf(htmlpath, MAXPATHLEN, "%s/index.html", uri);
+		snprintf(htmlpath, MAXPATHLEN, "%s/index.html", req->uri);
 
 		if (access(htmlpath, F_OK) != 0)
 		{
 			res->dirindex = 1;
-			strlcpy(req->uri, uri, MAXPATHLEN);
 			return 0;
 		}
 		else
@@ -120,7 +110,6 @@ int respond(char *rootpath, Request *req, Response *res)
 	else
 	{
 		res->dirindex = 0;
-		strlcpy(req->uri, uri, MAXPATHLEN);
 	}
 
 	if (stat(req->uri, &sb) == -1)
@@ -183,6 +172,7 @@ int respond(char *rootpath, Request *req, Response *res)
 
 	res->contenttype = magic_descriptor(cookie, fd);
 	res->status = status[OK];
+
 	if (req->method == HEAD)
 	{
 		res->headonly = 1;
@@ -265,7 +255,7 @@ int reply(int socket, Request *req, Response *res)
 				(void)fts_close(ftsp);
 				return -1;
 			}
-			if (ent->fts_level == 1 && ent->fts_info != FTS_DP)
+			if (ent->fts_level == 1 && ent->fts_info != FTS_DP && ent->fts_name[0] != '.')
 			{
 				char fname[strlen(ent->fts_name) + 2];
 				(void)snprintf(fname, sizeof(fname), "%s\n", ent->fts_name);

@@ -12,7 +12,6 @@
 #include "connect.h"
 
 #define CGIPREFIX "/cgi-bin"
-// #define TIME_STR_MAX 21 /* Max size of time string as dictated by provided format */
 
 int domain;
 
@@ -280,7 +279,7 @@ void handleConnection(int fd)
 	}
 	else
 	{
-		if (respond(dir, request, response) == -1)
+		if (respond(request, response) == -1)
 		{
 			if (d_opt)
 			{
@@ -348,7 +347,6 @@ void handleSocket(int sock)
 		exit(EXIT_FAILURE);
 	}
 
-	// handleConnection(sockFd);
 	if ((pid = fork()) < 0)
 	{
 		err(EXIT_FAILURE, "Fork failed");
