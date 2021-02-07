@@ -160,7 +160,10 @@ int main(int argc, char **argv)
 		}
 
 		// convert CGI absolute path into relative path
-		cgiDir += strlen(dir) + 1;
+		if (strncmp(dir, "/", strlen(dir)) != 0)
+		{
+			cgiDir += strlen(dir) + 1;
+		}
 	}
 
 	if (chdir(dir) != 0)
